@@ -2,27 +2,67 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-const paisesSchema = new mongoose.Schema({
-    nombre: {
-        comun: {
-            type: String,
-            trim: true,
-            required: true,
-            minLenght: 3,
-            maxLength: 90,
-        },
-        oficial: {
-            type: String,
-            trim: true,
-            required: true,
-            minLenght: 3,
-            maxLength: 90,
-        }
+// Sub-esquema para nombre
+const nombreSchema = new mongoose.Schema({
+    comun: {
+        type: String,
+        trim: true,
+        required: true,
+        minLength: 3,
+        maxLength: 90,
     },
-    // bandera: {
-    //     type: String,
-    //     trim: true
-    // }, // Solo PNG
+    oficial: {
+        type: String,
+        trim: true,
+        required: true,
+        minLength: 3,
+        maxLength: 90,
+    }
+});
+
+// Sub-esquema para monedas
+const monedasSchema = new mongoose.Schema({
+    simbolo: {
+        type: String,
+        trim: true,
+        required: true,
+        maxLength: 5
+    },
+    nombre: {
+        type: String,
+        trim: true,
+        required: true,
+        minLength: 3,
+        maxLength: 25,
+    }
+})
+
+// Sub-esquema para latitud y longitud
+const latLongSchema = new mongoose.Schema({
+    type: [Number],
+
+    validate: {
+        validator: (value) => (
+            // Validar si es un array de numeros y que sea de dos elementos 
+            Array.isArray(value) &&
+            value.length === 2 &&
+            value.every(num => typeof num === "number")
+        ),
+        message: "latLong debe contener [latitud, longitud]"
+    },
+    required: true
+});
+
+//////////////////////////
+// Esquema de paises
+/////////////////////////
+const paisesSchema = new mongoose.Schema({
+    nombre: nombreSchema,
+    bandera: {
+        type: String,
+        trim: true,
+        required: true
+    }, // URL PNG
     independiente: {
         type: Boolean,
         required: true
@@ -31,17 +71,16 @@ const paisesSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
-    capital: {
+    capital: [{
         type: String,
         trim: true,
-        required: true,
-        minLenght: 3,
+        minLength: 3,
         maxLength: 90,
-    },
+    }], // En la API de Rest Countries capital suele venir cómo un array.
     subregion: {
         type: String,
         trim: true,
-        requiered: true,
+        required: true,
     },
     conSalidaAlMar: {
         type: Boolean,
@@ -50,7 +89,7 @@ const paisesSchema = new mongoose.Schema({
     fronteras: [{
         type: String,
         trim: true,
-        minLenght: 3,
+        minLength: 3,
         maxLength: 3,
         uppercase: true
     }],
@@ -67,59 +106,21 @@ const paisesSchema = new mongoose.Schema({
     fifa: {
         type: String,
         trim: true,
-        required: true,
-        minLenght: 3,
+        minLength: 3,
         maxLength: 3,
         uppercase: true,
-    },
-    // zonasHorarias: [{
-    //     trim: true,
-    //     type: String,
-    //     required: true,
-    // }],
-    monedas: [{
-        simbolo: {
-            type: String,
-            trim: true,
-            required: true,
-            maxLength: 2
-        },
-        nombre: {
-            type: String,
-            trim: true,
-            required: true,
-            minLenght: 3,
-            maxLength: 25,
-        }
-    }],
-    idiomas: [{
-        acronimo: {
-            type: String,
-            trim: true,
-            required: true,
-            minLenght: 3,
-            maxLength: 3
-        },
-        nombre: {
-            type: String,
-            trim: true,
-            required: true,
-            minLenght: 3,
-            maxLength: 25
-        }
-    }],
-    latLong: {
-        type: [ Number ],
-        validate: {
-            validator: (value) => value.length === 2, // Validar que el array tenga exáctamente 2 elementos (Que representan la latitud y la longitud)
-            message: "latLong debe contener latitud y longitud"
-        },
-        requried: true
-    },
-    creador: process.env.CREATOR,
+    }, // Algunos paises no tienen código FIFA
+    monedas: [monedasSchema],
+    latLong: latLongSchema,
+    creador: {
+        type: String,
+        default: process.env.CREATOR
+    }
+}, {
+    timestamps: true // Agrega y administra automáticamente los campos createAt y updateAt
 });
 
-const Paises = mongoose.model("Pais", paisesSchema, process.env.MONGO_COLLECTION);
+const Paises = mongoose.model("Paises", paisesSchema, process.env.MONGO_COLLECTION);
 export default Paises;
 
 // Deciri luego si incluyo la bandera o nel
@@ -146,9 +147,14 @@ export default Paises;
 
     poblacion (Number) -> Input type number
 
-    segundosIdiomas (Array de Strings) -> Input type text
+    idiomas (Array de Strings) -> Input type text
 
     latLong (Array de Number) -> dos inputs type number
 
     fifa (String) -> input type text de 3 carácteres
 */
+
+/*
+    Puedo agregar la bandera y cuando renderize el formulario consumir la api de bandera de paises y mostrarlas para elegir una como contenido desplegable
+
+ */
