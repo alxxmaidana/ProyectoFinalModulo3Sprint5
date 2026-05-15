@@ -11,7 +11,7 @@ export function filtrarPaisesHispanohablantes(paises) {
 export function mapearPaisesHispanos(paisesHispanos) {
     return paisesHispanos.map(pais => {
         // Dado que currencies es un objeto -> currencies: { USD: { symbol: ..., name: ... } }
-        // Object.values() -> Obtiene los valores (symbol, name) de currencies y luego los recorre con map
+        // Object.values() -> Obtiene los valores (symbol, name) de currencies en un array y luego los recorre con map
         // monedas: [{ simbolo, nombre }, { simbolo, nombre }]
         const monedas = pais.currencies
             ? Object.values(pais.currencies).map((moneda) => ({
@@ -28,10 +28,8 @@ export function mapearPaisesHispanos(paisesHispanos) {
                 oficial: pais.name.nativeName.spa.official ?? pais.name.official, // Sin existe en español, se le asigna en inglés
             },
             bandera: pais.flags?.png ?? "",
-            independiente: pais.independent ?? false,
             capital: pais.capital ?? [], // Ya viene cómo un array
             subregion: pais.subregion ?? "Sin Subregión", // Algunos paises no tiene subregión
-            conSalidaAlMar: !pais.landlocked ?? false, // invertir el valor
             fronteras: pais.borders ?? [],
             area: pais.area ?? 0,
             poblacion: pais.population ?? 0,

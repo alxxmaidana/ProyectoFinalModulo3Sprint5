@@ -27,10 +27,6 @@ const paisesSchema = new mongoose.Schema({
         trim: true,
         required: true
     }, // URL PNG
-    independiente: {
-        type: Boolean,
-        required: true
-    },
     capital: [{
         type: String,
         trim: true,
@@ -41,10 +37,6 @@ const paisesSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: true,
-    },
-    conSalidaAlMar: {
-        type: Boolean,
-        required: true
     },
     fronteras: [{
         type: String,
