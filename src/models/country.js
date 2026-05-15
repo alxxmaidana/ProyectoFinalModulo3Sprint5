@@ -23,9 +23,8 @@ const paisesSchema = new mongoose.Schema({
         }
     },
     bandera: {
-        type: String,
+        type: URL,
         trim: true,
-        required: true
     }, // URL PNG
     capital: [{
         type: String,
@@ -35,6 +34,12 @@ const paisesSchema = new mongoose.Schema({
     }], // En la API de Rest Countries capital suele venir cómo un array.
     subregion: {
         type: String,
+        enum: [
+            "Sudamérica",
+            "América Central",
+            "El Caribe (América Insular)",
+            "Norteamérica"
+        ]
         trim: true,
         required: true,
     },
@@ -57,6 +62,7 @@ const paisesSchema = new mongoose.Schema({
     },
     zonasHorarias: [{
         type: String,
+        enum: [ "UTC-03:00", "UTC-04:00", "UTC-05:00", "UTC-06:00", "UTC-07:00", "UTC-08:00", "UTC-09:00" ]
         trim: true,
         required: true,
     }],

@@ -40,6 +40,6 @@ export function mapearPaisesHispanos(paisesHispanos) {
     });
 }
 
-export async function cargarPaisesHispanos(paises) {
+export async function cargarPaisesHispanohablantes(paises) {
     return await CountriesRepository.cargarPaisesHispanohablantes(paises);
 }
