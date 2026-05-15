@@ -2,72 +2,32 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Sub-esquema para nombre
-const nombreSchema = new mongoose.Schema({
-    comun: {
-        type: String,
-        trim: true,
-        required: true,
-        minLength: 3,
-        maxLength: 90,
-    },
-    oficial: {
-        type: String,
-        trim: true,
-        required: true,
-        minLength: 3,
-        maxLength: 90,
-    }
-});
-
-// Sub-esquema para monedas
-const monedasSchema = new mongoose.Schema({
-    simbolo: {
-        type: String,
-        trim: true,
-        required: true,
-        maxLength: 5
-    },
-    nombre: {
-        type: String,
-        trim: true,
-        required: true,
-        minLength: 3,
-        maxLength: 25,
-    }
-})
-
-// Sub-esquema para latitud y longitud
-const latLongSchema = new mongoose.Schema({
-    type: [Number],
-
-    validate: {
-        validator: (value) => (
-            // Validar si es un array de numeros y que sea de dos elementos 
-            Array.isArray(value) &&
-            value.length === 2 &&
-            value.every(num => typeof num === "number")
-        ),
-        message: "latLong debe contener [latitud, longitud]"
-    },
-    required: true
-});
-
 //////////////////////////
 // Esquema de paises
 /////////////////////////
 const paisesSchema = new mongoose.Schema({
-    nombre: nombreSchema,
+    nombre: {
+        comun: {
+            type: String,
+            trim: true,
+            required: true,
+            minLength: 3,
+            maxLength: 90,
+        },
+        oficial: {
+            type: String,
+            trim: true,
+            required: true,
+            minLength: 3,
+            maxLength: 90,
+        }
+    },
     bandera: {
         type: String,
         trim: true,
         required: true
     }, // URL PNG
     independiente: {
-        type: Boolean,
-        required: true
-    },
-    miembroOnu: {
         type: Boolean,
         required: true
     },
@@ -103,15 +63,36 @@ const paisesSchema = new mongoose.Schema({
         required: true,
         min: 0,
     },
-    fifa: {
+    zonasHorarias: [{
         type: String,
         trim: true,
-        minLength: 3,
-        maxLength: 3,
-        uppercase: true,
-    }, // Algunos paises no tienen código FIFA
-    monedas: [monedasSchema],
-    latLong: latLongSchema,
+        required: true,
+    }],
+    monedas: [{
+        simbolo: {
+            type: String,
+            trim: true,
+            required: true,
+            maxLength: 5
+        },
+        nombre: {
+            type: String,
+            trim: true,
+            required: true,
+            minLength: 3,
+            maxLength: 40,
+        }
+    }],
+    indiceGini: { // Algunos paises no tienen dato
+        valor: {
+            type: Number,
+            min: 0,
+            max: 100
+        },
+        anio: {
+            type: Number,
+        }
+    },
     creador: {
         type: String,
         default: process.env.CREATOR
@@ -122,8 +103,6 @@ const paisesSchema = new mongoose.Schema({
 
 const Paises = mongoose.model("Paises", paisesSchema, process.env.MONGO_COLLECTION);
 export default Paises;
-
-// Deciri luego si incluyo la bandera o nel
 
 // Inputs para los formularios
 /* 

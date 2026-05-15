@@ -3,9 +3,12 @@ import Paises from "../models/country.js";
 
 class CountriesRepository extends IRepository {
     // Agregar todos los paises de una sola vez
-    async cargarPaisesHispanohablantes(paisesHispanos) {
-        await Paises.insertMany(paisesHispanos);
+    async cargarPaisesHispanohablantes(paises) {
+        return await Paises.insertMany(paises);
     }
+
+    
 }
 
-export default CountriesRepository;
+// Crear una instancia de CountriesRepository y exportarlo globalmente
+export default new CountriesRepository();
