@@ -53,20 +53,18 @@ const paisesSchema = new mongoose.Schema({
         required: true,
     },
     monedas: {
-        type: [String],
-        validate: {
-            validator: function (value) {
-                return value && value.length > 0;
-            },
-            message: 'El campo monedas no puede quedar vacío'
-        },
         simbolo: { type: String, trim: true, required: true, maxLength: 5 },
         nombre: { type: String, trim: true, required: true, minLength: 3, maxLength: 40, }
     },
     indiceGini: { // Algunos paises no tienen dato
         valor: { type: Number, min: 0, max: 100 },
-        anio: { type: Number, }
+        anio: {
+            type: Number,
+            validate: Number.isInteger,
+            message: "anio debe ser un entero"
+        }
     },
+    tipoDocumento: { type: String, default: "pais", trim: true, requiered: true },
     creador: { type: String, default: process.env.CREATOR, trim: true, required: true }
 },
     {

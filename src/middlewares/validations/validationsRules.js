@@ -145,13 +145,11 @@ export const validacionesPaises = [
         .withMessage("Zona horária invalida"),
 
     // Validar monedas 
-    body("monedas")
-        .isArray({ min: 1 }).withMessage("Ingrese almenos una moneda"),
     body("monedas.*.simbolo")
-        .isString().withMessage("El símbolo debe ser texto")
+        .isString().withMessage("El símbolo de la moneda debe ser un texto")
         .bail()
         .trim()
-        .notEmpty().withMessage("El símbolo es requerido")
+        .notEmpty().withMessage("El símbolo de la moneda es requerido")
         .bail()
         .isLength({ max: 5 }).withMessage("El símbolo no puede superar los 5 caracteres"),
     body("monedas.*.nombre")
