@@ -1,14 +1,16 @@
 // Archivo de configuración de express
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config()
 
-dotenv.config();
+import router from "./routes/countriesRoutes.js"
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get("/", (_req, res) => {
-    res.send({ message: "Corriendo server" })
-})
+app.use(express.json())
+
+// Montar enrutador
+app.use("/api", router)
 
 export { app, port }

@@ -43,3 +43,8 @@ export function mapearPaisesHispanos(paisesHispanos) {
 export async function cargarPaisesHispanohablantes(paises) {
     return await CountriesRepository.cargarPaisesHispanohablantes(paises);
 }
+
+// Llamar al repositorio para agregar el país
+export async function agregarPais(paisAgregar) {
+    return await CountriesRepository.agregar(paisAgregar);
+}
