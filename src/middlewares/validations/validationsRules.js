@@ -81,7 +81,6 @@ export const validacionesPaises = [
         .trim(),
     // Validar que todos los países sean solo letras
     body("fronteras")
-    .custom()
         .custom(fronteras => {
             if (fronteras.some(pais => !pais.match(/^[A-Za-z\s]+$/))) {
                 throw new Error("Cada país debe contener sólo letras");
@@ -145,18 +144,18 @@ export const validacionesPaises = [
         .withMessage("Zona horária invalida"),
 
     // Validar monedas 
-    body("monedas.*.simbolo")
-        .isString().withMessage("El símbolo de la moneda debe ser un texto")
-        .bail()
+    body("moneda.simbolo")
         .trim()
         .notEmpty().withMessage("El símbolo de la moneda es requerido")
         .bail()
-        .isLength({ max: 5 }).withMessage("El símbolo no puede superar los 5 caracteres"),
-    body("monedas.*.nombre")
-        .isString().withMessage("El nombre de la moneda deber ser un texto")
+        .isString().withMessage("El símbolo de la moneda debe ser un texto")
         .bail()
+        .isLength({ max: 5 }).withMessage("El símbolo no puede superar los 5 caracteres"),
+    body("moneda.nombre")
         .trim()
         .notEmpty().withMessage("El nombre de la moneda es requerido")
+        .bail()
+        .isString().withMessage("El nombre de la moneda deber ser un texto")
         .bail()
         .isLength({ min: 3, max: 40 }).withMessage("El nombre debe tener entre 3 y 40 caracteres"),
 
