@@ -8,7 +8,11 @@ import { verificarErroresValidacion } from "../middlewares/validations/validatio
 const router = Router();
 
 // Endpoint para obtener todos los países y renderizarlos en el dasbhoard
-router.get("/", obtenerTodosLosPaisesController);
+
+// Renderizar vista principal
+router.get("/", (_req, res) => {
+    res.render("indexDashboard", { title: "Vista principal" });
+});
 
 // Endpoint para verificar validaciones en el backend
 router.post("/paises/agregar", validacionesPaises, verificarErroresValidacion, agregarPaisController);
