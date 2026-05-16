@@ -29,7 +29,11 @@ const paisesSchema = new mongoose.Schema({
             "América Central",
             "El Caribe (América Insular)",
             "Norteamérica",
-            "Sin Subregión"
+            "Sin Subregión",
+            "South America",
+            "Central America",
+            "North America",
+            "Caribbean"
         ],
         required: true,
     },
