@@ -51,6 +51,6 @@ export async function agregarPais(paisAgregar) {
 }
 
 export async function obtenerTodosLosPaises() {
-    const condicion = { $and: { tipoDato: "pais", creador: process.env.CREATOR } };
+    const condicion = { $and: [ {tipoDocumento: "pais"}, {creador: process.env.CREATOR} ]};
     return await CountriesRepository.obtenerTodos(condicion);
 }

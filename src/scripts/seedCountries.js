@@ -9,11 +9,10 @@ async function seedPaises() {
         // Filtrar los paises hispanohablantes
         const paisesHispanos =  filtrarPaisesHispanohablantes(paises);
         // Convertirlos paises al schema
-        const paisesMapeados =  mapearPaisesHispanos(paisesHispanos)
+        const paisesMapeados =  mapearPaisesHispanos(paisesHispanos);
         // Agregar paises convertidos a la colección de Mongo
         await cargarPaisesHispanohablantes(paisesMapeados);
         console.log("Paises cargados éxitosamente");
-        
     } catch (error) {
         console.log("Error al cargar los paises", error);
     }

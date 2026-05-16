@@ -8,8 +8,8 @@ class CountriesRepository extends IRepository {
         return await Paises.insertMany(paises);
     }
 
-    async obtenerTodos() {
-        return await Paises.find();
+    async obtenerTodos(condicion) {
+        return await Paises.find(condicion);
     }
 
     async agregar(paisAgregar){
