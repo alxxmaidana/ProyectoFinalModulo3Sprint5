@@ -81,6 +81,7 @@ export const validacionesPaises = [
         .trim(),
     // Validar que todos los países sean solo letras
     body("fronteras")
+        .optional()
         .custom(fronteras => {
             if (fronteras.some(pais => !pais.match(/^[A-Za-z\s]+$/))) {
                 throw new Error("Cada país debe contener sólo letras");
@@ -89,6 +90,7 @@ export const validacionesPaises = [
         }),
     // Validar longitud exácta de cada país
     body("fronteras")
+        .optional()
         .custom(fronteras => {
             if (fronteras.some(pais => pais.length !== 3)) {
                 throw new Error("El código de cada país debe tener exactamente 3 caracteres");
