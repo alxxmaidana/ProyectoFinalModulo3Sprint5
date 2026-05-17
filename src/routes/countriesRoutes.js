@@ -5,14 +5,25 @@ import { agregarPaisController, obtenerTodosLosPaisesController } from "../contr
 import { validacionesPaises } from "../middlewares/validations/validationsRules.js";
 import { verificarErroresValidacion } from "../middlewares/validations/validationsErrors.js";
 
+import { SUBREGIONES, ZONAS_HORARIAS } from "../controllers/countriesControllers.js";
+
 const router = Router();
 
-// Endpoint para obtener todos los países y renderizarlos en el dasbhoard
+// Obtener todos los países y renderizarlos en el dashboard
+router.get("/", obtenerTodosLosPaisesController);
 
-// Renderizar vista principal
-router.get("/", (_req, res) => {
-    res.render("indexDashboard", { title: "Vista principal" });
+// Renderizar formulario para agregar un país
+router.get("/agregar", (_req, res) => {
+    res.render("form", {
+      title: "Agregar País",
+      pais: null,
+      subregiones: SUBREGIONES,
+      zonasHorarias: ZONAS_HORARIAS,
+      errores: []
+    });
 });
+
+// router.post("/agregar", )
 
 // Endpoint para verificar validaciones en el backend
 router.post("/paises/agregar", validacionesPaises, verificarErroresValidacion, agregarPaisController);
