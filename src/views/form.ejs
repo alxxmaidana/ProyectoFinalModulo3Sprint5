@@ -1,0 +1,175 @@
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <!-- Mostrar Titulo para editar o agregar un pais -->
+      <h1 class="page-title">
+        <%= pais ? 'Editar País de América' : 'Agregar nuevo País Hispanohablante de América' %>
+      </h1>
+      <p class="page-subtitle">
+        <%= pais ? pais.nombre?.comun || '' : 'Completá los datos del país' %>
+      </p>
+    </div>
+    <a href="/" class="btn btn--ghost">← Volver</a>
+  </div>
+</div>
+
+<!-- Mostrar lo errores -->
+<% if (errores && errores.length> 0) { %>
+  <div class="alert alert--error">
+    <span class="alert-icon">✕</span>
+    <ul class="error-list">
+      <% errores.forEach(err=> { %><li>
+          <%= err %>
+        </li>
+        <% }) %>
+    </ul>
+  </div>
+  <% } %>
+
+
+
+    <!-- Formulario -->
+    <div class="form-card">
+      <!-- Preparar petición para guardar o editar un país -->
+      <form action="<%= pais ? '/' + pais._id + '/editar' : '/agregar' %>" method="POST" class="pais-form">
+        <!-- Inputy oculto para sobreescribir el método POST con PUT -->
+        <input type="hidden" name="_method" value="PUT" <%=pais ? '' : 'disabled' %>>
+
+        <!-- Nombre -->
+        <section class="form-section">
+          <h2 class="section-title">Nombre</h2>
+          <div class="form-grid form-grid--2">
+            <!-- Común -->
+            <div class="form-group">
+              <label class="form-label" for="nombre_comun">Nombre Común <span class="required">*</span></label>
+              <input type="text" id="nombre_comun" name="nombre.comun" class="form-input"
+                value="<%= pais ? (pais.nombre?.comun || '') : '' %>" minlength="3" maxlength="90" required />
+            </div>
+            <!-- Oficial -->
+            <div class="form-group">
+              <label class="form-label" for="nombre_oficial">Nombre Oficial <span class="required">*</span></label>
+              <input type="text" id="nombre_oficial" name="nombre.oficial" class="form-input"
+                value="<%= pais ? (pais.nombre?.oficial || '') : '' %>" minlength="3" maxlength="90" required />
+            </div>
+          </div>
+        </section>
+
+        <!-- Bandera y Capital -->
+        <section class="form-section">
+          <h2 class="section-title">Información General</h2>
+          <div class="form-grid form-grid--2">
+            <div class="form-group">
+              <label class="form-label" for="bandera">URL de Bandera (PNG)</label>
+              <input type="url" id="bandera" name="bandera" class="form-input"
+                value="<%= pais ? (pais.bandera || '') : '' %>" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="capital">Capital(es) <span class="required">*</span></label>
+              <input type="text" id="capital" name="capital" class="form-input"
+                value="<%= pais && pais.capital ? pais.capital.join(', ') : '' %>"
+                placeholder="Buenos Aires, Córdoba (separadas por coma)" required />
+              <span class="form-hint">Separar múltiples capitales con coma</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Subregión y Área -->
+        <section class="form-section">
+          <div class="form-grid form-grid--3">
+            <div class="form-group">
+              <label class="form-label" for="subregion">Subregión <span class="required">*</span></label>
+              <select id="subregion" name="subregion" class="form-select" required>
+                <option value="">Seleccioná una subregión</option>
+                <option value="Norteamérica">Norteamérica</option>
+                <% subregiones.forEach(sub=> { %>
+                  <option value="<%= sub %>" <%=pais && pais.subregion===sub ? 'selected' : '' %>><%= sub %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="area">Área (km²) <span class="required">*</span></label>
+              <input type="number" id="area" name="area" class="form-input" value="<%= pais ? (pais.area || '') : '' %>"
+                min="0" step="any" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="poblacion">Población <span class="required">*</span></label>
+              <input type="number" id="poblacion" name="poblacion" class="form-input"
+                value="<%= pais ? (pais.poblacion || '') : '' %>" min="0" required />
+            </div>
+          </div>
+        </section>
+
+        <!-- Fronteras -->
+        <section class="form-section">
+          <div class="form-group">
+            <label class="form-label" for="fronteras">Fronteras (códigos ISO 3)</label>
+            <input type="text" id="fronteras" name="fronteras" class="form-input"
+              value="<%= pais && pais.fronteras ? pais.fronteras.join(', ') : '' %>"
+              placeholder="ARG, BRA, CHL (separados por coma, 3 letras c/u)" />
+            <span class="form-hint">Códigos de 3 letras separados por coma</span>
+          </div>
+        </section>
+
+        <!-- Zonas Horarias -->
+        <section class="form-section">
+          <h2 class="section-title">Zonas Horarias <span class="required">*</span></h2>
+          <div class="checkbox-group">
+            <% zonasHorarias.forEach(zona=> { %>
+              <label class="checkbox-label">
+                <input type="checkbox" name="zonasHorarias" value="<%= zona %>" <%=pais && pais.zonasHorarias &&
+                  pais.zonasHorarias.includes(zona) ? 'checked' : '' %> />
+                <span>
+                  <%= zona %>
+                </span>
+              </label>
+              <% }) %>
+          </div>
+        </section>
+
+        <!-- Moneda -->
+        <section class="form-section">
+          <h2 class="section-title">Moneda</h2>
+          <div class="form-grid form-grid--2">
+            <div class="form-group">
+              <label class="form-label" for="moneda_simbolo">Símbolo <span class="required">*</span></label>
+              <input type="text" id="moneda_simbolo" name="moneda.simbolo" class="form-input"
+                value="<%= pais ? (pais.moneda?.simbolo || '') : '' %>" maxlength="5" required placeholder="$" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="moneda_nombre">Nombre de la Moneda <span class="required">*</span></label>
+              <input type="text" id="moneda_nombre" name="moneda.nombre" class="form-input"
+                value="<%= pais ? (pais.moneda?.nombre || '') : '' %>" minlength="3" maxlength="40" required
+                placeholder="Peso argentino" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Índice Gini -->
+        <section class="form-section">
+          <h2 class="section-title">Índice de Gini <span class="form-optional">(opcional)</span></h2>
+          <div class="form-grid form-grid--2">
+            <div class="form-group">
+              <label class="form-label" for="gini_valor">Valor (0 – 100)</label>
+              <input type="number" id="gini_valor" name="indiceGini.valor" class="form-input"
+                value="<%= pais && pais.indiceGini ? (pais.indiceGini.valor ?? '') : '' %>" min="0" max="100"
+                step="0.1" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="gini_anio">Año</label>
+              <input type="number" id="gini_anio" name="indiceGini.anio" class="form-input"
+                value="<%= pais && pais.indiceGini ? (pais.indiceGini.anio || '') : '' %>" min="1900"
+                max="<%= new Date().getFullYear() %>" step="1" placeholder="2022" />
+            </div>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <a href="/paises" class="btn btn--ghost">Cancelar</a>
+          <button type="submit" class="btn btn--primary">
+            <%= pais && pais._id ? 'Guardar Cambios' : 'Crear País' %>
+          </button>
+        </div>
+
+      </form>
+    </div>

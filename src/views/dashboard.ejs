@@ -1,0 +1,154 @@
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <h1 class="page-title">Países</h1>
+      <p class="page-subtitle"><%= paises.length %> registro<%= paises.length !== 1 ? 's' : '' %> en la base de datos</p>
+    </div>
+    <a href="/agregar" class="btn btn--primary">+ Agregar País</a>
+  </div>
+</div>
+
+<!-- Mensajes de confirmación si se agregó, editó o eliminó correctamente un país -->
+<!--  <%// if (mensaje) { %>
+<div class="alert alert--<%=// tipo %>">
+  <span class="alert-icon"><%=// tipo === 'exito' ? '✓' : 'ℹ' %></span>
+  <%= //mensaje %>
+  <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+</div>
+<% //} %> -->
+
+<!-- Mensaje y llamada a la acción si la colección se encuentra vacía -->
+<% if (paises.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-icon">◌</div>
+    <p class="empty-title">Sin países registrados</p>
+    <p class="empty-text">Comenzá agregando el primer país al sistema.</p>
+    <a href="/agregar" class="btn btn--primary">Agregar País</a>
+  </div>
+<% } else { %>
+
+  <!-- Tabla de Países Hispanohablantes de América -->
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="col-flag"></th>
+          <th>Nombre</th>
+          <th>Capital</th>
+          <th>Subregión</th>
+          <th>Fronteras</th>
+          <th class="col-num">Área (km²)</th>
+          <th class="col-num">Población</th>
+          <th>Zonas Horarias</th>
+          <th>Moneda</th>
+          <th>Gini</th>
+          <th class="col-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <% paises.forEach(pais => { %>
+        <!-- data-id para poder acceder al _id del documento -->
+        <tr class="table-row" data-id="<%= pais._id %>"> 
+
+          <!-- Bandera -->
+          <td class="cell-flag">
+            <% if (pais.bandera) { %>
+              <!-- URL de bandera  -->
+              <img src="<%= pais.bandera %>" alt="Bandera de <%= pais.nombre.comun %>" class="flag-img" />
+            <% } else { %>
+              <span class="flag-placeholder">—</span>
+            <% } %>
+          </td>
+
+          <!-- Nombre -->
+          <td>
+            <span class="name-comun"><%= pais.nombre.comun %></span>
+            <span class="name-oficial"><%= pais.nombre.oficial %></span>
+          </td>
+
+          <!-- Capital -->
+          <td>
+            <% if (pais.capital) { %>
+              <%= pais.capital.join(', ') %>
+            <% } else { %>
+              <span class="text-muted">—</span>
+            <% } %>
+          </td>
+
+          <!-- Subregión -->
+          <td>
+            <span class="badge"><%= pais.subregion %></span>
+          </td>
+
+          <!-- Fronteras -->
+          <td>
+            <% if (pais.fronteras && pais.fronteras.length) { %>
+              <div class="tags">
+                <% pais.fronteras.forEach(frontera => { %>
+                  <span class="tag"><%= frontera %></span>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <span class="text-muted">Sin fronteras</span>
+            <% } %>
+          </td>
+
+          <!-- Área -->
+          <td class="cell-num">
+            <%= pais.area.toLocaleString('es-AR') %>
+          </td>
+
+          <!-- Población -->
+          <td class="cell-num">
+            <%= pais.poblacion.toLocaleString('es-AR') %>
+          </td>
+
+          <!-- Zonas Horarias -->
+          <td>
+            <div class="tags">
+              <% pais.zonasHorarias.forEach(zonaHoraria => { %>
+                <span class="tag tag--mono"><%= zonaHoraria %></span>
+              <% }) %>
+            </div>
+          </td>
+
+          <!-- Moneda -->
+          <td>
+            <span class="moneda-simbolo"><%= pais.moneda.simbolo %></span>
+            <span class="moneda-nombre"><%= pais.moneda.nombre %></span>
+          </td>
+
+          <!-- Gini -->
+          <td>
+            <% if (pais.indiceGini && pais.indiceGini.valor) { %>
+              <div class="gini-wrapper">
+                <span class="gini-valor"><%= pais.indiceGini.valor.toFixed(1) %></span>
+                <% if (pais.indiceGini.anio) { %>
+                  <span class="gini-anio"><%= pais.indiceGini.anio %></span>
+                <% } %>
+              </div>
+            <% } else { %>
+              <span class="text-muted">—</span>
+            <% } %>
+          </td>
+
+          <!-- Acciones -->
+          <td class="cell-actions">
+            <a href="/editar/<%= pais._id %>" class="btn-action btn-action--edit" title="Editar">
+              Editar
+            </a>
+            <form action="/eliminar/<%= pais._id %>" method="POST" class="form-inline" onsubmit="return confirmarEliminar(event, '<%= pais.nombre.comun %>')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn-action btn-action--delete" title="Eliminar">
+                Eliminar
+              </button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<% } %>
