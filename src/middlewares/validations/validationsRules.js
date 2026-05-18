@@ -25,9 +25,9 @@ export const validacionesPaises = [
 
     // Validar URL de la bandera
     body("bandera")
-        .optional()
+        .optional({ values: "falsy" })  // ← ignora "", null, undefined, 0
         .trim()
-        .isURL().withMessage("El campo bandera debe ser una URL válida"), // Validar que sea una URL
+        .isURL().withMessage("El campo bandera debe ser una URL válida"),
 
     // Validar el array capital
     body("capital")
@@ -96,15 +96,6 @@ export const validacionesPaises = [
                 throw new Error("El código de cada país debe tener exactamente 3 caracteres");
             }
             return true;
-        })
-        // Validar que cada país estén en mayúsculas
-        .custom(fronteras => {
-            if (fronteras.some(pais => pais !== pais.toUpperCase())) {
-                throw new Error(
-                    "Ingrese el código de cada país en mayúsculas"
-                );
-            }
-            return true;
         }),
 
     // Validar área del país
@@ -163,6 +154,7 @@ export const validacionesPaises = [
 
     // Validar indice gini 
     body("indiceGini")
+        .optional()
         .custom((indiceGini) => {
             // Si no se envió, no valida nada
             if (!indiceGini) return true;
@@ -176,10 +168,12 @@ export const validacionesPaises = [
         }),
     body("indiceGini.valor")
         .optional()
+        .trim()
         // Validar que valor sea un número
         .isNumeric().withMessage("El indice de Gini debe ser un valor numérico")
         // Validar que valor sea un número entre 0 y 100
         .custom((valor) => {
+            valor = Number(valor);
             if (valor < 0 || valor > 100) {
                 throw new Error("El indice de Gini debe debe ser un valor entre 0 y 100");
             }
@@ -188,10 +182,16 @@ export const validacionesPaises = [
     // Validar que anio se un año válido
     body("indiceGini.anio")
         .optional()
+        .trim()
+        .isNumeric("El año deber ser un número entero")
+        .bail()
+        // Validar que el año de medición del indice de gini este entre 1900 y 2026
         .custom((anio) => {
-            if (!Number.isInteger(anio)) { // Validar que sea antero
-                throw new Error("Ingrese un año válido");
+            anio = Number(anio);
+            const anioActual = new Date().getFullYear(); // new Date().getFullYear() -> obtiene el año acual
+            if (anio < 1912 || anio > anioActual) {
+                throw new Error("El año de medición del cóeficiente de Gini debe ser desde 1912 a 2026");
             }
             return true;
         })
-];
+    ];
