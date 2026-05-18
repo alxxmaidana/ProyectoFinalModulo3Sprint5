@@ -41,6 +41,7 @@ export function mapearPaisesHispanos(paisesHispanos) {
     });
 }
 
+// Cargar todos los paíse hispanos de américa de la API
 export async function cargarPaisesHispanohablantes(paises) {
     return await CountriesRepository.cargarPaisesHispanos(paises);
 }
@@ -50,7 +51,23 @@ export async function agregarPais(paisAgregar) {
     return await CountriesRepository.agregar(paisAgregar);
 }
 
+// Obtener todos los países de la colección
 export async function obtenerTodosLosPaises() {
     const condicion = { $and: [ {tipoDocumento: "pais"}, {creador: process.env.CREATOR} ]};
     return await CountriesRepository.obtenerTodos(condicion);
+}
+
+// Buscar un país por id
+export async function buscarPaisPorId(id) {
+    return await CountriesRepository.buscarPorId(id);
+}
+
+// Editar un país por id
+export async function editarPais(id, paisActualizado) {
+    return await CountriesRepository.editar(id, paisActualizado);
+}
+
+// Eliminar un país por id
+export async function eliminarPais(id) {
+    return await CountriesRepository.eliminar(id);
 }

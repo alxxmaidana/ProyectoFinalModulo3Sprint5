@@ -24,8 +24,8 @@ class CountriesRepository extends IRepository {
         return await Paises.findByIdAndDelete(id);
     }
 
-    async editar(id) {
-        return await Paises.findByIdAndUpdate(id);
+    async editar(id, paisActualizado) {
+        return await Paises.findByIdAndUpdate(id, paisActualizado, { returnDocument: "after" });
     }
 }
 
