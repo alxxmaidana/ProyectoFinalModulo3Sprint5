@@ -4,29 +4,35 @@ import dotenv from "dotenv";
 dotenv.config()
 import expressLayouts from "express-ejs-layouts"
 import path from "path";
-
+import methodOverride from "method-override"
 import router from "./routes/countriesRoutes.js"
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Parsear json del body a objetos JS
-app.use(express.json())
-
-// EJS cómo el motor de vistas
+// Cofiguración EJS y Layouts
 app.set("view engine", "ejs");
-// Definir el  Directorio para las vistas
-app.set("views", path.resolve("./ejs-layouts/views"));
-
-// Activar expressLayouts
+app.set("views", path.resolve("./views"));
 app.use(expressLayouts);
-// Definir archivo base para los layouts
 app.set("layout", "layout");
 
-// Servir los archivos estáticos
-app.use(express.static(path.resolve("./ejs-layouts/public")))
+// Middlewares
+app.use(express.static(path.resolve("./views/public")));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Parsear formularios con el Método POST
+app.use(methodOverride("_method"));
+
+// Redireccioanar a /paises que es donde están montadas las rutas
+app.get("/", (_req, res) => {
+    res.redirect("/paises");
+})
 
 // Montar enrutador
-app.use("/", router)
+app.use("/paises", router)
+
+// Mostrar mensaje cuando no se encuentra una ruta
+app.use((_req, res) => {
+	res.status(404).send({ mensaje: "Ruta no encontrada" });
+});
 
 export { app, port }
