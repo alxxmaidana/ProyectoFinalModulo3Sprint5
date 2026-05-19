@@ -3,11 +3,11 @@ class IRepository {
         throw new Error("El método 'cargarPaisesHispanohablantes()' no implementado.");
     }
 
-    obtenerTodos() {
+    obtenerTodos(_filtro) {
         throw new Error("El método 'obtenerTodos()' no implementado.");
     }
 
-    obtenerPorId(_id) {
+    buscarPorId(_id) {
         throw new Error("El método 'obtenerPorId()' no implementado.");
     }
 
@@ -21,6 +21,14 @@ class IRepository {
 
     editar(_id, _paisActualizado) {
         throw new Error("El método 'editarPais()' no implementado.");
+    }
+
+    obtenerData(_condicion) {
+        throw new Error("El método 'obtenerData()' no implementado");
+    }
+
+    guardarData(_data) {
+        throw new Error("El método 'guardarData' no impolementado");
     }
 };
 

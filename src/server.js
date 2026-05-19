@@ -1,4 +1,4 @@
-import { conectarDB } from "./db/DBConfig.js";
+import { conectarDB } from "./config/DBConfig.js";
 import {app, port} from "./app.js";
 
 async function iniciarServidor() {

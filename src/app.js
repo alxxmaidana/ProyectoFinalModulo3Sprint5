@@ -1,11 +1,12 @@
 // Archivo de configuración de express
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config()
 import expressLayouts from "express-ejs-layouts"
 import path from "path";
 import methodOverride from "method-override"
 import router from "./routes/countriesRoutes.js"
+
+dotenv.config()
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parsear formularios con el Método POST
 app.use(methodOverride("_method"));
 
-// Redireccioanar a /paises que es donde están montadas las rutas
+// Redireccionar a /paises que es donde están montadas las rutas
 app.get("/", (_req, res) => {
     res.redirect("/paises");
 })
