@@ -1,11 +1,16 @@
 import { Router } from "express";
 
-import { agregarPaisController, obtenerTodosLosPaisesController, buscarPaisPorIdController, editarPaisController, eliminarPaisController } from "../controllers/countriesControllers.js"
+import { 
+  agregarPaisController, 
+  obtenerTodosLosPaisesController,
+  buscarPaisPorIdController,
+  editarPaisController,
+  eliminarPaisController,
+  renderizarFormularioAgregar
+} from "../controllers/countriesControllers.js"
 
 import { validacionesPaises } from "../middlewares/validations/validationsRules.js";
 import { verificarErroresValidacion } from "../middlewares/validations/validationsErrors.js";
-
-import { SUBREGIONES, ZONAS_HORARIAS } from "../controllers/countriesControllers.js";
 
 import parsearCampos from "../middlewares/parseFields.js";
 
@@ -15,15 +20,7 @@ const router = Router();
 router.get("/", obtenerTodosLosPaisesController);
 
 // Renderizar formulario para agregar un país
-router.get("/agregar", (_req, res) => {
-  res.render("form", {
-    title: "Agregar País",
-    pais: null,
-    subregiones: SUBREGIONES,
-    zonasHorarias: ZONAS_HORARIAS,
-    errores: []
-  });
-});
+router.get("/agregar", renderizarFormularioAgregar);
 
 // Renderizar formulario para editar un país
 router.get("/:id/editar", buscarPaisPorIdController);
