@@ -110,7 +110,7 @@ export function recopilarDatosParaFormulario(paises) {
 // Instanciar y llamar método para guardar el documento con los datos para formulario
 export async function guardarDatosParaFormulario(paisesData) {
     const data = new DatosFormulario(paisesData)
-    return await CountriesRepository.guardarData(data);
+    return await CountriesRepository.guardarDatosFormulario(data);
 }
 
 // Obtener data
