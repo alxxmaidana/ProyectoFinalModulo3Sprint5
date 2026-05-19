@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Esquema de datos para los formularios de los paises (url bandera, zonasHorarias y Subregiones)
-const dataSchema = new mongoose.Schema({
+const datosFormularioSchema = new mongoose.Schema({
     banderasURL: [{type: String, trim: true }],
     zonasHorarias: [{ type: String, trim: true}],
     subregiones: [{ type: String, trim: true}],
@@ -11,5 +11,5 @@ const dataSchema = new mongoose.Schema({
     tipoDocumento: { type: String, trim: true, default: "data", required: true }
 });
 
-const PaisesData = mongoose.model("PaisesDate", dataSchema, process.env.MONGO_COLLECTION);
-export default PaisesData;
+const DatosFormulario = mongoose.model("DatosForumario", datosFormularioSchema, process.env.MONGO_COLLECTION);
+export default DatosFormulario;

@@ -2,7 +2,7 @@ import { syncBuiltinESMExports } from "node:module";
 import CountriesRepository from "../repositories/CountriesRepository.js";
 import dotenv from "dotenv";
 import Paises from "../models/country.js";
-import PaisesData from "../models/countriesData.js";
+import DatosFormulario from "../models/formsData.js";
 dotenv.config();
 
 // Filtrar paises con idioma español
@@ -77,7 +77,7 @@ export async function eliminarPais(id) {
 }
 
 // Función para obtener las URLs de banderas, zonasHorarias y subregiones de los países de América
-export function obtenerDatosPaises(paises) {
+export function recopilarDatosParaFormulario(paises) {
     let banderasURL = [];
     let zonasHorarias = [];
     let subregiones = [];
@@ -108,14 +108,13 @@ export function obtenerDatosPaises(paises) {
 }
 
 // Instanciar y llamar método para guardar el documento con los datos para formulario
-export async function guardarDataPaises(paisesData) {
-    const data = new PaisesData(paisesData)
+export async function guardarDatosParaFormulario(paisesData) {
+    const data = new DatosFormulario(paisesData)
     return await CountriesRepository.guardarData(data);
 }
 
 // Obtener data
-export async function obtenerDataPaises() {
+export async function obtenerDatosParaFormulairo() {
     const condicion = { $and: [ { tipoDocumento: "data", creador: process.env.CREATOR } ] };
-    return await CountriesRepository.obtenerData(condicion);
+    return await CountriesRepository.DatosFormulario(condicion);
 }
-

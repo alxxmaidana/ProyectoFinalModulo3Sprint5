@@ -1,5 +1,11 @@
 import { conectarDB } from "../config/DBConfig.js";
-import { cargarPaisesHispanohablantes, filtrarPaisesHispanohablantes, guardarDataPaises, mapearPaisesHispanos, obtenerDatosPaises} from "../services/countriesService.js";
+import {
+    cargarPaisesHispanohablantes,
+    filtrarPaisesHispanohablantes,
+    guardarDatosParaFormulario,
+    mapearPaisesHispanos,
+    recopilarDatosParaFormulario
+} from "../services/countriesService.js";
 
 // Función para cargar los datos inciales de la App a la base de datos
 // Guarda los países hispanohablantes de América y un documento que recopila, las URL de banderas, subregiones y zonasHorarias.
@@ -9,9 +15,9 @@ async function seedPaises() {
         const response = await fetch("https://restcountries.com/v3.1/region/americas");
         const paises = await response.json();
         // Recopilar las urls, subregiones y zonasHorarias
-        const datosRecopilados = obtenerDatosPaises(paises);
+        const datosRecopilados = recopilarDatosParaFormulario(paises);
         // Guardar los datos recopilados a la colección de mongo
-        await guardarDataPaises(datosRecopilados);
+        await guardarDatosParaFormulario(datosRecopilados);
         // Filtrar los países obtenido por idioma español
         const paisesHispanos =  filtrarPaisesHispanohablantes(paises);
         // Filtrar y formatear campos necesarios para el esquema

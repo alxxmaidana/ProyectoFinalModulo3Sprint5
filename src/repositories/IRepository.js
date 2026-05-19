@@ -23,11 +23,11 @@ class IRepository {
         throw new Error("El método 'editarPais()' no implementado.");
     }
 
-    obtenerData(_condicion) {
+    obtenerDatosFormulario(_condicion) {
         throw new Error("El método 'obtenerData()' no implementado");
     }
 
-    guardarData(_data) {
+    guardarDatosFormulario(_data) {
         throw new Error("El método 'guardarData' no impolementado");
     }
 };

@@ -1,6 +1,6 @@
 import IRepository from "./IRepository.js";
 import Paises from "../models/country.js";
-import PaisesData from "../models/countriesData.js"
+import DatosFormulario from "../models/formsData.js"
 
 // Implementar métodos de la interfaz
 class CountriesRepository extends IRepository {
@@ -35,12 +35,12 @@ class CountriesRepository extends IRepository {
     }
 
     // Obtener docuemento con los datos para formulario
-    async obtenerData(condicion) {
-        return await PaisesData.find(condicion)     
+    async obtenerDatosFormulario(condicion) {
+        return await DatosFormulario.find(condicion)     
     }
 
     // Guardar documento con los datos para formulario
-    async guardarData(data) {
+    async guardarDatosFormulario(data) {
         return await data.save();
     }
 }
