@@ -46,8 +46,19 @@ export function mapearPaisesHispanos(paisesHispanos) {
 
 // Instanciar y llamar al método para guardar los paises
 export async function cargarPaisesHispanohablantes(paisesHispanos) {
-    const paises = paisesHispanos.map(pais => new Paises(pais));
-    return await CountriesRepository.cargarPaisesHispanos(paises);
+    // .map() devuleve un array de promesas
+    const resultados = paisesHispanos.map((pais) => {
+        const filtro = { $and: [{
+                "nombre.oficial": pais.nombre.oficial,
+                tipoDocumento: "pais",
+                creador: process.env.CREATOR
+            }] };
+
+        return CountriesRepository.upsertPais(filtro, pais)
+    });
+
+    // Espera a que tadas las promiesas de map sean resultas y las retorna
+    return await Promise.all(resultados);
 }
 
 // Llamár el método para agregar el país
@@ -108,9 +119,10 @@ export function recopilarDatosParaFormulario(paises) {
 }
 
 // Instanciar y llamar método para guardar el documento con los datos para formulario
-export async function guardarDatosParaFormulario(paisesData) {
-    const data = new DatosFormulario(paisesData)
-    return await CountriesRepository.guardarDatosFormulario(data);
+export async function guardarDatosParaFormulario(datosRecopilados) {
+    const documento = datosRecopilados;
+    const filtro = { $and: [{ tipoDocumento: "data", creador: process.env.CREATOR }] };
+    return await CountriesRepository.upsertDatosFormulario(filtro, documento);
 }
 
 // Obtener data

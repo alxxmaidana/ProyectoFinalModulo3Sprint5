@@ -1,34 +1,38 @@
 class IRepository {
-    cargarPaisesHispanos(_paises) {
-        throw new Error("El método 'cargarPaisesHispanohablantes()' no implementado.");
-    }
-
     obtenerTodos(_filtro) {
-        throw new Error("El método 'obtenerTodos()' no implementado.");
+        throw new Error("Método 'obtenerTodos()' no implementado.");
     }
 
     buscarPorId(_id) {
-        throw new Error("El método 'obtenerPorId()' no implementado.");
+        throw new Error("Método 'obtenerPorId()' no implementado.");
     }
 
     agregar(_pais) {
-        throw new Error("El método 'agregarPais()' no implementado.");
+        throw new Error("Método 'agregarPais()' no implementado.");
     }
 
     eliminar(_id) {
-        throw new Error("El método 'eliminarPais()' no implementado.");
+        throw new Error("Método 'eliminarPais()' no implementado.");
     }
 
     editar(_id, _paisActualizado) {
-        throw new Error("El método 'editarPais()' no implementado.");
+        throw new Error("Método 'editarPais()' no implementado.");
     }
 
     obtenerDatosFormulario(_condicion) {
-        throw new Error("El método 'obtenerData()' no implementado");
+        throw new Error("Método 'obtenerData()' no implementado");
     }
 
     guardarDatosFormulario(_data) {
-        throw new Error("El método 'guardarData' no impolementado");
+        throw new Error("Método 'guardarData' no impolementado");
+    }
+
+    upsertPais(_filtro, _pais) {
+        throw new Error("Método 'upsertPais()' no implementado");
+    }
+
+    upsertDocumento(_filtro, _documento) {
+        throw new Error("Método 'upsertDocumento()' no implementado");
     }
 };
 

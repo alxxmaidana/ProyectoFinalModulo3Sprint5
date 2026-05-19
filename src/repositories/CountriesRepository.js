@@ -43,6 +43,18 @@ class CountriesRepository extends IRepository {
     async guardarDatosFormulario(data) {
         return await data.save();
     }
+
+    // Reemplazar un país si ya existe
+    async upsertPais(filtro, pais) {
+        return await Paises.replaceOne(filtro, pais, { upsert: true });
+    }
+
+    // Reemplazar el documento con datos para formulario si ya existe 
+    async upsertDatosFormulario(filtro, documento) {
+        return await DatosFormulario.replaceOne(filtro, documento, { upsert: true });
+    }
+    // Upsert: true -> Es clave para guardar el documento si no éxiste
+    
 }
 
 export default new CountriesRepository();
