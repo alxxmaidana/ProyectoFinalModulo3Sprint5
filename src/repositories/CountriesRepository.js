@@ -35,8 +35,8 @@ class CountriesRepository extends IRepository {
     }
 
     // Obtener docuemento con los datos para formulario
-    async obtenerDatosFormulario(condicion) {
-        return await DatosFormulario.find(condicion)     
+    async obtenerDatosFormulario(filtro) {
+        return await DatosFormulario.findOne(filtro)    
     }
 
     // Guardar documento con los datos para formulario

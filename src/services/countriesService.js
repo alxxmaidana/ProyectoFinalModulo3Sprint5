@@ -125,8 +125,10 @@ export async function guardarDatosParaFormulario(datosRecopilados) {
     return await CountriesRepository.upsertDatosFormulario(filtro, documento);
 }
 
-// Obtener data
-export async function obtenerDatosParaFormulairo() {
-    const condicion = { $and: [ { tipoDocumento: "data", creador: process.env.CREATOR } ] };
-    return await CountriesRepository.DatosFormulario(condicion);
+// Obtener los datos para los forumarios de agregar y editar países
+export async function obtenerDatosParaFormulario() {
+    const filtro = { $and: [ { tipoDocumento: "data", creador: process.env.CREATOR } ] };
+    const resultado = await CountriesRepository.obtenerDatosFormulario(filtro);
+    // Asegurar que se retorne un objeto con las propiedades esperadas aunque no exista el documento
+    return resultado || { banderasURL: [], zonasHorarias: [], subregiones: [] };
 }
