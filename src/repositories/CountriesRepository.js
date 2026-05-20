@@ -2,49 +2,46 @@ import IRepository from "./IRepository.js";
 import Paises from "../models/country.js";
 import DatosFormulario from "../models/formsData.js"
 
-// Implementar métodos de la interfaz
 class CountriesRepository extends IRepository {
-    // Guardar los paises hispanos de america a la colección
+
+    // Implementación método guardar los países hispanos de América
     async cargarPaisesHispanos(paises) {
         return await Paises.insertMany(paises);
     }
 
-    // Obtener todos los paises de la colección
+    // Obtener todos los países de la colección
     async obtenerTodos(filtro) {
         return await Paises.find(filtro);
     }
 
-    // Agregar un país a la colección
     async agregar(paisAgregar){
         return await paisAgregar.save();
     }
 
-    // Buscar un país por su id
     async buscarPorId(id) {
         return await Paises.findById(id);
     }
 
-    // Eliminar un país por si id
     async eliminar(id) {
         return await Paises.findByIdAndDelete(id);
     }
 
-    // Actualizar documento por id
     async editar(id, paisActualizado) {
         return await Paises.findByIdAndUpdate(id, paisActualizado);
     }
 
-    // Obtener docuemento con los datos para formulario
+    // Obtener el documento que contiene los datos para los formularios (banderasURL, zonasHorarias y subregiones)
     async obtenerDatosFormulario(filtro) {
+        // findOne, porque solo existe un documento en la colección, si usamos find() nos devuelve un array con un solo elemento.
         return await DatosFormulario.findOne(filtro)    
     }
 
-    // Guardar documento con los datos para formulario
+    // Guardar el documento con los datos para formulario
     async guardarDatosFormulario(data) {
         return await data.save();
     }
 
-    // Reemplazar un país si ya existe
+    // Reemplazar el país si ya existe, o agegarlos si no existe.
     async upsertPais(filtro, pais) {
         return await Paises.replaceOne(filtro, pais, { upsert: true });
     }
@@ -55,6 +52,13 @@ class CountriesRepository extends IRepository {
     }
     // Upsert: true -> Es clave para guardar el documento si no éxiste
     
+
+    // Verificar si el país y existe en la colección
+    async verificarSiYaExiste(filtro) {
+        // Con el método exists() verificamos si ya existe el país con el filtro definido en el servicio
+        // Es mas rápido y eficiente que el método find() o findOne() por que solo devuelve un booleano y su _id
+        return await Paises.exists(filtro);
+    }
 }
 
 export default new CountriesRepository();

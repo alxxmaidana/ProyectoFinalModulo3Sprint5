@@ -5,8 +5,6 @@ import expressLayouts from "express-ejs-layouts"
 import path from "path";
 import methodOverride from "method-override"
 import router from "./routes/countriesRoutes.js"
-
-
 dotenv.config()
 
 const app = express();

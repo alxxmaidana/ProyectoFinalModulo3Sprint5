@@ -2,9 +2,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-//////////////////////////
-// Esquema de paises
-/////////////////////////
 const paisesSchema = new mongoose.Schema({
     nombre: {
         comun: { type: String, trim: true, required: true, minlength: 3, maxlength: 90, },
@@ -39,17 +36,17 @@ const paisesSchema = new mongoose.Schema({
         simbolo: { type: String, trim: true, required: true, maxlength: 5 },
         nombre: { type: String, trim: true, required: true, minlength: 3, maxlength: 40, }
     },
-    indiceGini: { // Algunos paises no tienen dato
+    // Algunos paises no tienen dato
+    indiceGini: {
         valor: { type: Number, min: 0, max: 100 },
         anio: { type: Number, min: 1912, max: new Date().getFullYear() } // Recortar el rango del año 1912 - 2026;
     },
     // Tipo de documento y creador para filtrar en la colección
     tipoDocumento: { type: String, default: "pais", trim: true, required: true },
     creador: { type: String, default: process.env.CREATOR, trim: true, required: true }
-},
+    },
     {
-        // Agrega y administra automáticamente los campos createAt y updateAt
-        timestamps: true
+        timestamps: true // Agrega y administra automáticamente los campos createAt y updateAt
     });
 
 const Paises = mongoose.model("Paises", paisesSchema, process.env.MONGO_COLLECTION);

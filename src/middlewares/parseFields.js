@@ -1,12 +1,12 @@
 import { body } from "express-validator";
 
-// Parsear strings a array
+// Middleware para parsear los campos capital, fronteras y zonasHorarias, que vienen como strings a arrays
+// Cuando se envía el formulario los datos de los inputs llegan cómo strings al backend
 const parsearCampos = (req, _res, next) => {
     const campos = ["capital", "fronteras", "zonasHorarias"];
+    // Recorre los campos, verifica si están en el body y si son strings, los separa por comas, elimina espacios y filtra valores falsy (null, "", undefined)
     campos.forEach((campo) => {
-        // Verificar si el campo está en el body y si es un string
         if (req.body[campo] && typeof req.body[campo] === "string") {
-            // Separa en comas, elimina espacios y filtra valores falsy (null, "", undefined)
             req.body[campo] = req.body[campo].split(",").map((item) => item.trim()).filter(Boolean);
         }
     });

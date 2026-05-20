@@ -1,10 +1,7 @@
 import { body } from "express-validator";
 
-export const validacionesPaises = [
-    ////////////////////////
-    // Validaciones nombres
-    ///////////////////////
-
+// Midleware de validación para los campos del formulario de agregar y editar países
+const validacionesPaises = [
     // Nombre común
     body("nombre.comun")
         // Eliminar los espacios el blanco al inicio y final
@@ -224,4 +221,4 @@ export const validacionesPaises = [
 
 ];
 
-
+export default validacionesPaises;
