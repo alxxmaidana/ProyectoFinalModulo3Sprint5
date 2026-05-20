@@ -188,49 +188,40 @@ export const validacionesPaises = [
     // Indice de Gini
     ////////////////////////////
     body("indiceGini")
-        .optional()
         .custom((indiceGini) => {
-            // Si no se envió, no valida nada
-            if (!indiceGini) return true;
-
+            // Si no existe el objeto completo, no valida nada
+            // if (!indiceGini) return true;
+            console.log("Validando índice de Gini:", indiceGini);
             const { valor, anio } = indiceGini;
-            
-            // Valida que se halla enviado ambos campos
-            if ((valor !== undefined && anio === undefined) || (valor === undefined && anio !== undefined)) {
-                throw new Error("Si se envía indiceGini, debe incluir el valor y año de medición");
+            // Si se envía uno solo, exigir ambos
+            const envioValor = valor !== undefined && valor !== "";
+            const envioAnio = anio !== undefined && anio !== "";
+
+            if (envioValor || envioAnio) {
+                if (!envioValor || !envioAnio) {
+                    throw new Error("Si se envía el índice de Gini, ambos campos (valor y anio) son obligatorios");
+                }
             }
             return true;
         }),
-    // Indice Gini valor
+    // Valor índice Gini
     body("indiceGini.valor")
-        .optional()
-        .trim()
-        // Validar que valor sea un número
-        .isNumeric().withMessage("El indice de Gini debe ser un valor numérico")
-        // Validar que valor sea un número entre 0 y 100
-        .custom((valor) => {
-            valor = Number(valor);
-            if (valor < 0 || valor > 100) {
-                throw new Error("El indice de Gini debe debe ser un valor entre 0 y 100");
-            }
-            return true;
-        }),
-    // Año de medición
+        // Si el valor es falsy (null, undefined, "") no se valida, pero si se envía algo que no es falsy se valida
+        .optional({ values: "falsy" }) 
+        // Es un número flotante entre 0 y 100
+        .isFloat({ min: 0, max: 100 })
+        .withMessage( "El índice de Gini debe ser un número entre 0 y 100"),
+
+    // Año medición
     body("indiceGini.anio")
-        .optional()
-        .trim()
-        .isNumeric("El año deber ser un número entero")
-        .bail()
-        // Validar que sea entero
-        .isInt().withMessage(`El año de medición del indice de Gini deber ser un valor entero entre 1912 y ${new Date().getFullYear}`)
-        .bail()
-        // Validar que el año de medición del indice de gini este entre 1900 y 2026
-        .custom((anio) => {
-            anio = Number(anio);
-            const anioActual = new Date().getFullYear(); // new Date().getFullYear() -> obtiene el año acual
-            if (anio < 1912 || anio > anioActual) {
-                throw new Error(`El año de medición del cóeficiente de Gini debe ser desde 1912 a ${new Date().getFullYear}`);
-            }
-            return true;
-        })
-    ];
+        // Si el año es falsy (null, undefined, "") no se valida, pero si se envía algo que no es falsy se valida 
+        .optional({ values: "falsy" })
+        // Validar que se un número entero entre 1912 y el año actual
+        .isInt({min: 1912, max: new Date().getFullYear()})
+        .withMessage(
+            `El año de medición del índice de Gini debe ser un número entero entre 1912 y ${new Date().getFullYear()}`
+        )
+
+];
+
+

@@ -6,6 +6,7 @@ import path from "path";
 import methodOverride from "method-override"
 import router from "./routes/countriesRoutes.js"
 
+
 dotenv.config()
 
 const app = express();
@@ -18,9 +19,9 @@ app.use(expressLayouts);
 app.set("layout", "layout");
 
 // Middlewares
-app.use(express.static(path.resolve("./views/public")));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Parsear formularios con el Método POST
+app.use(express.static(path.resolve("./views/public")));
 app.use(methodOverride("_method"));
 
 // Redireccionar a /paises que es donde están montadas las rutas
