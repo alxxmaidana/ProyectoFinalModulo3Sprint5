@@ -157,6 +157,9 @@ ul { list-style: none; }
   letter-spacing: -0.03em;
   color: var(--text-primary);
   line-height: 1.2;
+  display: flex;
+  gap: .8rem;
+  align-items: center;
 }
 
 .page-subtitle {
@@ -632,6 +635,8 @@ ul { list-style: none; }
   border-top: 1px solid var(--border);
   background: var(--surface);
   padding: 14px 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .footer-inner {

@@ -1,33 +1,27 @@
+<!-- Encabezado del dashobard -->
 <div class="page-header">
   <div class="page-header-inner">
     <div>
-      <h1 class="page-title">Países</h1>
-      <p class="page-subtitle"><%= paises.length %> registro<%= paises.length !== 1 ? 's' : '' %> en la base de datos</p>
+      <h1 class="page-title">Tabla de países hispanohablantes de América</h1>
+      <p class="page-subtitle">Administra los países hispanos de América. Agrega, edita y elimina paises de forma sencilla.</p>
     </div>
-    <a href="/agregar" class="btn btn--primary">+ Agregar País</a>
+    <!-- Botón para renderizar el formulário de agregar -->
+    <a href="/paises/agregar" class="btn btn--primary">+ Agregar País</a>
   </div>
 </div>
 
 <!-- Mensajes de confirmación si se agregó, editó o eliminó correctamente un país -->
-<!--  <%// if (mensaje) { %>
-<div class="alert alert--<%=// tipo %>">
-  <span class="alert-icon"><%=// tipo === 'exito' ? '✓' : 'ℹ' %></span>
-  <%= //mensaje %>
-  <button class="alert-close" onclick="this.parentElement.remove()">×</button>
-</div>
-<% //} %> -->
-
-<!-- Mensaje y llamada a la acción si la colección se encuentra vacía -->
-<% if (paises.length === 0) { %>
-  <div class="empty-state">
-    <div class="empty-icon">◌</div>
-    <p class="empty-title">Sin países registrados</p>
-    <p class="empty-text">Comenzá agregando el primer país al sistema.</p>
-    <a href="/agregar" class="btn btn--primary">Agregar País</a>
+  <% if (mensaje) { %>
+  <div class="alert alert--<%= tipoMensaje %>">
+    <span class="alert-icon"><%= tipoMensaje === "exito" ? '✓' : 'ℹ' %></span>
+    <%= mensaje %>
+    <button class="alert-close" onclick="this.parentElement.remove()">×</button>
   </div>
-<% } else { %>
-
-  <!-- Tabla de Países Hispanohablantes de América -->
+<% } %>
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<!-- Tabla de países con botónes para editar/eliminar -->
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<% if (paises) { %>
   <div class="table-wrapper">
     <table class="data-table">
       <thead>
@@ -48,7 +42,7 @@
       <tbody>
 
         <% paises.forEach(pais => { %>
-        <!-- data-id para poder acceder al _id del documento -->
+        <!-- data-id para poder acceder al _id del país -->
         <tr class="table-row" data-id="<%= pais._id %>"> 
 
           <!-- Bandera -->
@@ -108,7 +102,7 @@
           <td>
             <div class="tags">
               <% pais.zonasHorarias.forEach(zonaHoraria => { %>
-                <span class="tag tag--mono"><%= zonaHoraria %></span>
+                <span class="tag tag--maono"><%= zonaHoraria %></span>
               <% }) %>
             </div>
           </td>
@@ -123,23 +117,23 @@
           <td>
             <% if (pais.indiceGini && pais.indiceGini.valor) { %>
               <div class="gini-wrapper">
+                <!-- Mostrar el valor con un decimal -->
                 <span class="gini-valor"><%= pais.indiceGini.valor.toFixed(1) %></span>
-                <% if (pais.indiceGini.anio) { %>
-                  <span class="gini-anio"><%= pais.indiceGini.anio %></span>
-                <% } %>
+                <span class="gini-anio"><%= pais.indiceGini.anio %></span>
               </div>
             <% } else { %>
               <span class="text-muted">—</span>
             <% } %>
           </td>
 
-          <!-- Acciones -->
+          <!-- Botónes con para editar/eliminar país -->
           <td class="cell-actions">
-            <a href="/editar/<%= pais._id %>" class="btn-action btn-action--edit" title="Editar">
+            <!-- Botón para hecer la patición GET para renderizar el formulario de edición, obteniendo y mandando su ID cómo parametro de ruta -->
+            <a href="/paises/<%= pais._id %>/editar" class="btn-action btn-action--edit" title="Editar">
               Editar
             </a>
-            <form action="/eliminar/<%= pais._id %>" method="POST" class="form-inline" onsubmit="return confirmarEliminar(event, '<%= pais.nombre.comun %>')">
-              <input type="hidden" name="_method" value="DELETE">
+            <!-- Botón para eliminar el país, haciendo la petición DELETE mandando su id cómo parámeto y Sobreescribiendo el método POST por el método DELETE -->
+            <form action="paises/<%= pais._id %>/eliminar?_method=DELETE" method="POST" class="form-inline" id="formDelete">
               <button type="submit" class="btn-action btn-action--delete" title="Eliminar">
                 Eliminar
               </button>
