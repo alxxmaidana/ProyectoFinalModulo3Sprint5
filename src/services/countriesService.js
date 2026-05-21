@@ -1,37 +1,34 @@
-import { syncBuiltinESMExports } from "node:module";
 import CountriesRepository from "../repositories/CountriesRepository.js";
 import dotenv from "dotenv";
 import Paises from "../models/country.js";
 import DatosFormulario from "../models/formsData.js";
 dotenv.config();
 
-// Filtrar paises con idioma español
-export function filtrarPaisesHispanohablantes(paises) {
-    return paises.filter(pais => pais.languages.spa);
-}
-
 //////////////////////////////////////////////
 // Obtener los datos y formatearlos al esquema
 //////////////////////////////////////////////
-export function mapearPaisesHispanos(paisesHispanos) {
+function filtrarYFormatearCamposPaisesHispanos(paisesHispanos) {
     return paisesHispanos.map(pais => {
         // Dado que currencies es un objeto compuesto -> currencies: { USD: { symbol: ..., name: ... } }
-        // El método values(object) -> obtenemos los valores del objeto currencies (symbol, name) en un array -> [{ symbol: ... , name: ... }, {..}, ...]
-        const primeraMoneda = Object.values(pais.currencies)[0]; // -> primera moneda array de objetos, accedemos al primer objeto
-        const moneda = primeraMoneda ? { simbolo: primeraMoneda.symbol ?? "N/A", nombre: primeraMoneda.name ?? "N/A"} : null
+        // El método values(object) -> Obtenemos los valores del objeto currencies (symbol, name) y los guardamos en un array -> [{ symbol: ... , name: ... }, {..}, ...]
+        // Luego acceder al primer elemento del array (primera moneda del país) y obtenmos su símbolo y nombre
+        const primeraMoneda = Object.values(pais.currencies)[0];
+        const moneda = primeraMoneda ? { simbolo: primeraMoneda.symbol ?? "N/A", nombre: primeraMoneda.name ?? "N/A" } : null
 
-        // Obtener el valor de gini
-        // El método entries(object) obtiene del objeto los pares clave/valor y los guarda en una matriz -> [ [clave, valor], [clave, valor] ]
-        // de gini { "2019": 43.5 } -> valoresGini = [ [2019, 43.5] ]
+        // Obtenemos el valor y el año del indice de Gini
+        // El indice de Gini viene cómo un objeto con el año como clave y el valor como valor -> gini: { "2019": 43.5 }
+        // Con el método entries(object) obtenemos del objeto los pares clave/valor (en este caso el año y el valor del índice) y los guarda en una matriz -> [ [clave, valor] ]
+        // Obtenemos -> [ ["2019", 43.5] ], y accedemos al primer y único elemento del array
         const valoresGini = pais.gini ? Object.entries(pais.gini)[0]: null; 
         
         // El operador ?? (coalesencia nula) devuelve el operando del lado derecho cuando el valor del izquierdo es "null" o "undefined"
         return {
             nombre: {
-                comun: pais.name.nativeName.spa.common ?? pais.name.common, // Sin existe en español, se le asigna en inglés
-                oficial: pais.name.nativeName.spa.official ?? pais.name.official, // Sin existe en español, se le asigna en inglés
+                // Intentamos obtener el nombre común y oficial en español, si no lo tiene le asignamos el nombre común y oficial general (en inglés)
+                comun: pais.name.nativeName.spa.common ?? pais.name.common,
+                oficial: pais.name.nativeName.spa.official ?? pais.name.official,
             },
-            bandera: pais.flags?.png ?? "",
+            bandera: pais.flags.png ?? "",
             capital: pais.capital ?? [], // Ya viene cómo un array
             subregion: pais.subregion ?? "Sin Subregión", // Algunos paises no tiene subregión
             fronteras: pais.borders ?? [],
@@ -44,21 +41,57 @@ export function mapearPaisesHispanos(paisesHispanos) {
     });
 }
 
-// Instanciar y llamar al método para guardar los paises
-export async function cargarPaisesHispanohablantes(paisesHispanos) {
-    // .map() devuleve un array de promesas
-    const resultados = paisesHispanos.map((pais) => {
-        const filtro = { $and: [{
-                "nombre.oficial": pais.nombre.oficial,
-                tipoDocumento: "pais",
-                creador: process.env.CREATOR
-            }] };
+function ordernarZonasHorarias(zonasHorarias) {
+    // Ordenar las zonas horarias alfabéticamente
+    return zonasHorarias.sort((a, b) => a.localeCompare(b));
+}
 
-        return CountriesRepository.upsertPais(filtro, pais)
+// Para recoplira los datos para el formulario de agregar/editar país.
+function recopilarDatosParaFormulario(paises) {
+    let banderasURL = [];
+    let zonasHorarias = [];
+    let subregiones = [];
+
+    // Recorre cada país
+    paises.forEach((pais) => {
+        // Obtenemos la URL del PNG de la bandera y la agregamos al array de banderasURL
+        banderasURL.push(pais.flags.png);
+        // Obtenemos las zonas horarias del país y las agregamos al array de zonasHorarias, asegurando que no se repitan
+        const zonasHorariasPais = pais.timezones;
+        for (let i = 0; i < zonasHorariasPais.length; i++) {
+            // Si la zona horaria no está en el array, la agrega
+            if (!zonasHorarias.includes(zonasHorariasPais[i])){ 
+                zonasHorarias.push(zonasHorariasPais[i])
+            }
+        } 
+        // Obtenemos la subregión del país y la agregamos al array de subregiones, asegurando que no se repitan
+        const subregionPais = pais.subregion;
+        if (!subregiones.includes(subregionPais)) {
+            subregiones.push(subregionPais)
+        }
     });
+    // Agregar la opción "Sin Subregión" al array de subregiones, para los países que no tienen subregión.
+    subregiones.push("Sin Subregión");
+    zonasHorarias = ordernarZonasHorarias(zonasHorarias);
+    return { banderasURL, zonasHorarias, subregiones };
+}
 
-    // Espera a que tadas las promiesas de map sean resultas y las retorna
-    return await Promise.all(resultados);
+// Servicio para hacer el upsert de los datos para el formulario, recopilando las URLs de las banderas, las zonas horarias y las subregiones.
+export async function upsertDatosParaFormulario(paises) {
+    const datosRecopilados = recopilarDatosParaFormulario(paises);
+    return await CountriesRepository.upsertDatosFormulario(datosRecopilados);
+}
+
+// Filtrar paises de América por idoma español
+function filtrarPaisesHispanohablantes(paises) {
+    return paises.filter(pais => pais.languages.spa);
+}
+
+// Servicio para hacer el upsert de cada país hispanohablante de América, filtrando y formateando los datos al esquema definido en el modelo.
+export async function upsertPaisesHispanohablantes(paises) {
+    const paisesHispanos = filtrarPaisesHispanohablantes(paises);
+    const paisesFormateados = filtrarYFormatearCamposPaisesHispanos(paisesHispanos);
+    return await CountriesRepository.upsertPais(paisesFormateados);
 }
 
 // Llamár el método para agregar el país
@@ -68,8 +101,7 @@ export async function agregarPais(paisAgregar) {
 
 // Crear filtro y llamar al método para obtener todos los países de la colección
 export async function obtenerTodosLosPaises() {
-    const condicion = { $and: [ {tipoDocumento: "pais"}, {creador: process.env.CREATOR} ]};
-    return await CountriesRepository.obtenerTodos(condicion);
+    return await CountriesRepository.obtenerTodos();
 }
 
 // Llamar al método para buscar un país por id
@@ -87,48 +119,14 @@ export async function eliminarPais(id) {
     return await CountriesRepository.eliminar(id);
 }
 
-// Función para obtener las URLs de banderas, zonasHorarias y subregiones de los países de América
-export function recopilarDatosParaFormulario(paises) {
-    let banderasURL = [];
-    let zonasHorarias = [];
-    let subregiones = [];
-
-    // Obtener URLs del png de las banderas
-    paises.forEach((pais) => {
-        banderasURL.push(pais.flags.png);
-        // Obtener zonas horarias
-        const zonasHorariasPais = pais.timezones;
-        for (let i = 0; i < zonasHorariasPais.length; i++) {
-            // Si alguna zona horaria del país no esta en zonasHorarias la incluye
-            if (!zonasHorarias.includes(zonasHorariasPais[i])){ 
-                zonasHorarias.push(zonasHorariasPais[i])
-            }
-        } 
-        // Obtener subregiones
-        const subregionPais = pais.subregion;
-        // Si subregion no están en el array la agrega
-        if (!subregiones.includes(subregionPais)) {
-            subregiones.push(subregionPais)
-        }
-    });
-    // Agregar un valor más al array de subregiones
-    subregiones.push("Sin Subregión");
-
-    // Retorarlo cómo un objeto
-    return { banderasURL, zonasHorarias, subregiones };
-}
-
-// Instanciar y llamar método para guardar el documento con los datos para formulario
-export async function guardarDatosParaFormulario(datosRecopilados) {
-    const documento = datosRecopilados;
-    const filtro = { $and: [{ tipoDocumento: "data", creador: process.env.CREATOR }] };
-    return await CountriesRepository.upsertDatosFormulario(filtro, documento);
-}
-
 // Obtener los datos para los forumarios de agregar y editar países
 export async function obtenerDatosParaFormulario() {
-    const filtro = { $and: [ { tipoDocumento: "data", creador: process.env.CREATOR } ] };
-    const resultado = await CountriesRepository.obtenerDatosFormulario(filtro);
+    const resultado = await CountriesRepository.obtenerDatosFormulario();
     // Asegurar que se retorne un objeto con las propiedades esperadas aunque no exista el documento
     return resultado || { banderasURL: [], zonasHorarias: [], subregiones: [] };
+}
+
+// Servicio para verficiar si ya existe el país con el filtro definido
+export async function verificarSiYaExisteElPais(nombreOficial) {
+    return await CountriesRepository.verificarSiYaExiste();
 }

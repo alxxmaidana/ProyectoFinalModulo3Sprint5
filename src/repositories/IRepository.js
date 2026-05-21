@@ -1,5 +1,5 @@
 class IRepository {
-    obtenerTodos(_filtro) {
+    obtenerTodos() {
         throw new Error("Método 'obtenerTodos()' no implementado.");
     }
 
@@ -20,27 +20,22 @@ class IRepository {
     }
 
     // Obtener los datos para los formularios (banderasURL, zonasHorarias y subregiones)
-    obtenerDatosFormulario(_condicion) {
+    obtenerDatosFormulario() {
         throw new Error("Método 'obtenerData()' no implementado");
     }
 
-    // Guardar los datos para los formularios
-    guardarDatosFormulario(_data) {
-        throw new Error("Método 'guardarData' no impolementado");
-    }
-
     // Método para actualizar/reemplazar un país si ya existe, o agegarlos si no existe.
-    upsertPais(_filtro, _pais) {
+    upsertPais(_pais) {
         throw new Error("Método 'upsertPais()' no implementado");
     }
 
     // Método para actualizar/reemplazar el documento de datos para formulario si ya existe, o agegarlos si no existe.
-    upsertDocumento(_filtro, _documento) {
+    upsertDocumento(_documento) {
         throw new Error("Método 'upsertDocumento()' no implementado");
     }
 
-    // Método para verificar si un país ya existe antes de agregarlo
-    verificarSiYaExiste(_filtro) {
+    // Método para verificar si un país ya existe en la colección
+    verificarSiYaExiste() {
         throw new Error("Método 'verificarSiYaExiste()' no implementado");
     }
 };
