@@ -121,9 +121,7 @@ export async function eliminarPais(id) {
 
 // Obtener los datos para los forumarios de agregar y editar países
 export async function obtenerDatosParaFormulario() {
-    const resultado = await CountriesRepository.obtenerDatosFormulario();
-    // Asegurar que se retorne un objeto con las propiedades esperadas aunque no exista el documento
-    return resultado || { banderasURL: [], zonasHorarias: [], subregiones: [] };
+    return await CountriesRepository.obtenerDatosFormulario();
 }
 
 // Servicio para verficiar si ya existe el país con el filtro definido

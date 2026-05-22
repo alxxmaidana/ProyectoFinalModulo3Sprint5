@@ -10,7 +10,7 @@ const parsearCampos = (req, _res, next) => {
             req.body[campo] = req.body[campo].split(",").map((item) => item.trim()).filter(Boolean);
         }
     });
-    next()
+    next();
 }
 
 export default parsearCampos;

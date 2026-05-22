@@ -45,7 +45,7 @@ export async function getFormularioAgregar(_req, res) {
             subregiones: datosFormulario.subregiones, // Mandamos el array de subregiones para mostrar las opciones en el formulario
             zonasHorarias: datosFormulario.zonasHorarias, // Mandamos para el mismo proposito las zonas Horárias
             banderas: datosFormulario.banderasURL, // Mandamos el array de URLs de las banderas para mostrar las opciones en el formulario
-            errores: [] // Array vacío de errores 
+            errores: {} // Array vacío de errores 
         });
     } catch (error) {
         res.status(500).json({
@@ -69,7 +69,7 @@ export async function postFormularioAgregar(req, res) {
                 }
                 return acc;
             }, {});
-            // Obtnemos un objeto con los errores de validación, donde la clave es el nombre del campo y el valor es el mensaje de error correspondiente. Por ejemplo: { path: "El nombre es obligatorio", msg: "La capital es obligatoria" }
+            // Obtnemos un objeto con los errores de validación, donde la clave es el nombre del campo y el valor es el mensaje de error correspondiente. Por ejemplo: { path: msg }
             console.log("Errores de validación:", errores);
 
             // obtener los datos para el formulario
@@ -84,13 +84,14 @@ export async function postFormularioAgregar(req, res) {
                 errores, // Mandamos el objeto con los errores de validación
             });
 
+        } else {
+            await agregarPais(req.body);
+             // Redireccionar al dashboard con un mensaje de éxito
+            res.status(204).redirect("/paises?mensaje=País agregado éxitosamente&tipoMensaje=exito");
         }
-        
-        // Redireccionar al dashboard con un mensaje de éxito
-        res.redirect("/paises?mensaje=País agregado éxitosamente&tipoMensaje=exito");
     } catch (error) {
         // Redireccionar al dashboard con un mensaje de error
-        res.redirect("/paises?mensaje=Error del servidor al crear el País&tipoMensaje=error");
+        res.status(500).redirect("/paises?mensaje=Error del servidor al crear el País&tipoMensaje=error");
         console.error("Error al agregar el recursos", error);
     }
 }
@@ -100,16 +101,17 @@ export async function getFormularioEditar(req, res) {
     try {
         const { id } = req.params;
         const pais = await buscarPaisPorId(id);
+        console.log("País encontrado por id:", pais);
         // Obtener los datos para el formulario de la db (subregiones, urls banderas y zonasHorarias);
         const datosFormulario = await obtenerDatosParaFormulario();
         // Renderizar el formulario y precargar los datos del país
-        res.render("editCountry", {
-            title: `Editar ${pais.nombre.comun}`,
-            pais, // Enviamos el país encotrado
+        res.status(200).render("editCountry", {
+            title: "Editar",
+            pais, // Enviamos el país encontrado para precargar los campos del formulario con sus datos
             subregiones: datosFormulario.subregiones, // Mandamos el array de subregiones para mostrar las opciones en el formulario
             zonasHorarias: datosFormulario.zonasHorarias, // Mandamos para el mismo proposito las zonas Horárias
             banderas: datosFormulario.banderasURL, // Mandamos el array de URLs de las banderas para mostrar las opciones en el formulario
-            errores: [] // Array vacío de errores
+            errores: {} // Array vacío de errores
         })
     } catch (error) {
         res.status(500).send({
@@ -123,8 +125,34 @@ export async function getFormularioEditar(req, res) {
 export async function putFormularioEditar(req, res) {
     try {
         const { id } = req.params;
-        const paisActualizado = await editarPais(id, req.body);
-        res.redirect("/paises?mensaje=País actualizado éxitosamente&tipoMensaje=exito");
+        
+        const erroresValidacion = validationResult(req);
+
+        if (!erroresValidacion.isEmpty()) {
+           const errores = erroresValidacion.array().reduce((acc, error) => {
+                if (!acc[error.path]) { 
+                    acc[error.path] = error.msg;
+                }
+                return acc;
+            }, {});
+            console.log("_id", req.body._id);
+
+            const datosFormulario = await obtenerDatosParaFormulario();
+            return res.status(400).render("editCountry", {
+                title: `Editar ${req.body.nombre?.comun || req.body.nombreComun || 'País'}`,
+                // Enviamos los paise junto con el id para no perderlo al renderizar el formulario con los errores de validación, ya que el id viene por params y no por body, entonces al renderizar el formulario con los datos del body perdemos el id, por eso lo agregamos manualmente al objeto del país.
+                pais: { ...req.body, _id: id },
+                subregiones: datosFormulario.subregiones,
+                zonasHorarias: datosFormulario.zonasHorarias,
+                banderas: datosFormulario.banderasURL,
+                errores
+            });
+        } else {
+            await editarPais(id, req.body);
+            res.redirect("/paises?mensaje=País actualizado éxitosamente&tipoMensaje=exito");
+        }
+
+        
     } catch (error) {
         res.status(500).send({
             message: "Error al editar el país",
