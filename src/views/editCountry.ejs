@@ -1,0 +1,43 @@
+<!-- Encabezado del fomulario -->
+<div class="page-header">
+    <div class="page-header-inner">
+        <div>
+            <h1 class="page-title">
+                <%= 'Editar '+ pais.nombre.comun  %>
+                <% if (pais) { %>
+                    <img src="<%= pais.bandera %>" alt="Bandera de <%= pais.nombre.comun %>" class="flag-img" />
+                <% } %>
+            </h1>
+            <p class="page-subtitle">
+                Completa los campos del País. Los campos con <span class="required">*</span> son obligatórios.
+            </p>
+        </div>
+        <!-- Botón para voler al Dashboard -->
+        <a href="/paises" class="btn btn--ghost">← Volver</a>
+</div>
+
+<!-- Formulario -->
+<div class="form-card">
+    <form action="/paises/<%= pais._id %>/editar?_method=PUT" method="POST">
+
+        <!-- Incluir el formulario, pasandolo los campos necesarios -->
+        <%- include("partials/form", {
+            title: "Agregar País",
+            pais,
+            subregiones,
+            zonasHorarias,
+            banderas, 
+            errores
+        }) %>
+
+        <!-- Form buttons -->
+        <div class="form-actions">
+            <!-- Botón para cancelar y volver al dashobard -->
+            <a href="/paises" class="btn btn--ghost">Cancelar</a>
+            <!-- Botón para enviar el formulario  -->
+            <button type="submit" class="btn btn--primary">
+                Guardar cambios
+            </button>
+        </div>
+    </form>
+</div>

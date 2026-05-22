@@ -22,7 +22,6 @@ export async function getDashboard(req, res) {
             title: "Dashboard de Países Hispanos de América | GeoPanel",
             paises, // array de paises
             // Obtendra el mensaje y tipo de la cadena de consulta (query) sólo si redireccionamos desde el formulario de agregar o editar país, sino será null
-            // Intenta obtener el mensaje y tipo de la cadena de cosulta, si no existe les asigna null.
             // Con mensaje y tipo de mensaje al redireccionar al dashboard despues de agregar/editar/eliminar, pordremos mostrar los mensaje de exito/error.
             mensaje: req.query.mensaje || null,
             tipoMensaje: req.query.tipoMensaje || null
@@ -40,7 +39,7 @@ export async function getFormularioAgregar(_req, res) {
     try {
         // Obtener los datos para el formulario de la db (subregiones, urls banderas y zonasHorarias);
         const datosFormulario = await obtenerDatosParaFormulario();
-        res.render("form", {
+        res.render("addCountry", {
             title: "Agregar País",
             pais: null, // Objeto país nulo para mostrar los campos del formulario vacío
             subregiones: datosFormulario.subregiones, // Mandamos el array de subregiones para mostrar las opciones en el formulario
@@ -49,19 +48,45 @@ export async function getFormularioAgregar(_req, res) {
             errores: [] // Array vacío de errores 
         });
     } catch (error) {
-        res.status(500).json({ 
+        res.status(500).json({
             message: "Error al renderizar el formulário",
             error: error.message
         });
     }
-    
 }
 
 // Agregar un país a la colección
 export async function postFormularioAgregar(req, res) {
     try {
-        // obterner los datos para el formulario de la db (subregiones, urls banderas y zonasHorarias);
-        // const datosFormulario = await obtenerDatosParaFormulario();    
+        // Obtener los errores de validación de express-validator
+        const result = validationResult(req);
+        console.log("Errores de validación:", result);
+
+        if (!result.isEmpty()) {
+            const errores = result.array().reduce((acc, error) => {
+                if (!acc[error.path]) { 
+                    acc[error.path] = error.msg;
+                }
+                return acc;
+            }, {});
+            // Obtnemos un objeto con los errores de validación, donde la clave es el nombre del campo y el valor es el mensaje de error correspondiente. Por ejemplo: { path: "El nombre es obligatorio", msg: "La capital es obligatoria" }
+            console.log("Errores de validación:", errores);
+
+            // obtener los datos para el formulario
+            const datosFormulario = await obtenerDatosParaFormulario();
+            // Renderizar el formulario manteniendo los datos ingresados y mostrando los errores de validación
+            return res.status(400).render("addCountry", {
+                title: "Agregar País",
+                pais: req.body, // Los datos ingresado por el usuario obtenidos del body
+                subregiones: datosFormulario.subregiones,
+                zonasHorarias: datosFormulario.zonasHorarias,
+                banderas: datosFormulario.banderasURL,
+                errores, // Mandamos el objeto con los errores de validación
+            });
+
+        }
+        
+        // Redireccionar al dashboard con un mensaje de éxito
         res.redirect("/paises?mensaje=País agregado éxitosamente&tipoMensaje=exito");
     } catch (error) {
         // Redireccionar al dashboard con un mensaje de error
@@ -78,7 +103,7 @@ export async function getFormularioEditar(req, res) {
         // Obtener los datos para el formulario de la db (subregiones, urls banderas y zonasHorarias);
         const datosFormulario = await obtenerDatosParaFormulario();
         // Renderizar el formulario y precargar los datos del país
-        res.render("form", {
+        res.render("editCountry", {
             title: `Editar ${pais.nombre.comun}`,
             pais, // Enviamos el país encotrado
             subregiones: datosFormulario.subregiones, // Mandamos el array de subregiones para mostrar las opciones en el formulario
@@ -105,7 +130,7 @@ export async function putFormularioEditar(req, res) {
             message: "Error al editar el país",
             error: error.message
         });
-    }   
+    }
 }
 
 // Eliminar un País
