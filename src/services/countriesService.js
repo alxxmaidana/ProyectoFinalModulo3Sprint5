@@ -100,6 +100,38 @@ export async function agregarPais(paisAgregar) {
     return await CountriesRepository.agregar(paisAgregar);
 }
 
+export function obtenerTotales(paises, clave) {
+    const total = paises.reduce((acumulador, pais) => {
+        let valor;
+        // Si el país no tien el valor no los suma, y continua con el siguiente país
+        if (pais[clave]) {
+            valor = pais[clave];    
+            //const numero = Number(valor) || 0;
+            return acumulador + valor;
+        }
+        return acumulador;
+    }, 0);
+    console.log("Total acumulado:", total);
+    return total;
+}
+
+// Calcular promedio, recibe el array de países y la clave del valor a promediar
+export function calcularPromedio(paises, clave) {
+    let contador = 0;
+    let acumulador = 0;
+    paises.forEach((pais) => {
+        if (pais[clave]) {
+            console.log("Valor encontrado para el país:", pais.nombre.comun, "Valor:", pais[clave]);
+            contador++;
+            let valor = pais[clave];
+            acumulador += valor;
+        }   
+    });
+    const promedio = contador > 0 ? acumulador / contador : 0;
+    console.log("Promedio calculado:", promedio);
+    return promedio;
+}
+
 // Crear filtro y llamar al método para obtener todos los países de la colección
 export async function obtenerTodosLosPaises() {
     return await CountriesRepository.obtenerTodos();

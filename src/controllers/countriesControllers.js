@@ -9,7 +9,8 @@ import {
     upsertDatosParaFormulario,
     upsertPaisesHispanohablantes,
     formatearErrores,
-    
+    obtenerTotales,
+    calcularPromedio
 } from "../services/countriesService.js";
 
 import Paises from "../models/country.js";
@@ -19,14 +20,16 @@ import { validationResult } from "express-validator";
 export async function getDashboard(req, res) {
     try {
         const paises = await obtenerTodosLosPaises();
-        // Renderizar la vista del dashboard y pasarle los países obtenidos
+        const promedio = calcularPromedio(paises, "indiceGini.valor");
         res.status(200).render("dashboard", {
             title: "Dashboard de Países Hispanos de América | GeoPanel",
             paises,
             // Obtendra el mensaje y tipo de la cadena de consulta (query) sólo si redireccionamos desde el formulario de agregar o editar país, sino será null
             // Con mensaje y tipo de mensaje al redireccionar al dashboard despues de agregar/editar/eliminar, pordremos mostrar los mensaje de exito/error.
             mensaje: req.query.mensaje || null,
-            tipoMensaje: req.query.tipoMensaje || null
+            tipoMensaje: req.query.tipoMensaje || null,
+            totalArea: obtenerTotales(paises, "area"),
+            totalPoblacion: obtenerTotales(paises, "poblacion")
         });
     } catch (error) {
         res.status(500).json({
@@ -79,7 +82,10 @@ export async function postFormularioAgregar(req, res) {
             });
         }
         const nuevoPais = new Paises(req.body);
-        await agregarPais(nuevoPais);
+        await agregarPais(nuevoPais
+
+            
+        );
         // Redireccionar al dashboard con un mensaje de éxito
         res.status(204).redirect("/paises?mensaje=País agregado éxitosamente&tipoMensaje=exito");
     } catch (error) {

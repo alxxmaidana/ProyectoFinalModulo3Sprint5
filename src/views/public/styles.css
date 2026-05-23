@@ -619,15 +619,9 @@ ul { list-style: none; }
   margin-bottom: 8px;
 }
 
-.error-detail {
-  font-size: 0.8125rem;
-  font-family: var(--font-mono);
-  color: var(--danger);
-  background: var(--danger-light);
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  display: inline-block;
-  margin-bottom: 24px;
+.error-field {
+  border-radius: 1px solid var(--danger);
+  background-color: #c0392b;
 }
 
 /* --- Footer ----------------------------------------------- */

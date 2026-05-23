@@ -4,8 +4,8 @@
         <div class="form-group">
           <!-- Nombre Común -->
             <div class="field-container">
-                <label class="form-label" for="nombre_comun">Nombre Común <span class="required">*</span></label>
-                <input type="text" id="nombre_comun" name="nombre[comun]" class="form-input" value="<%= pais ? pais.nombre.comun : '' %>"/>
+                <label class="form-label " for="nombre_comun">Nombre Común <span class="required">*</span></label>
+                <input type="text" id="nombre_comun" name="nombre[comun]" class="form-input <%= errores['nombre.comun'] ? "error-field" : "" %>" value="<%= pais ? pais.nombre.comun : '' %>"/>
                 <% if (errores['nombre.comun']) { %>
                     <span class="alert alert--error"><%= errores['nombre.comun'] %></span>
                 <% } %>
@@ -13,7 +13,7 @@
             <!-- Nombre Oficial -->
             <div class="form-group">
                 <label class="form-label" for="nombre_oficial">Nombre Oficial <span class="required">*</span></label>
-                <input type="text" id="nombre_oficial" name="nombre[oficial]" class="form-input"value="<%= pais ? pais.nombre.oficial : '' %>"/>
+                <input type="text" id="nombre_oficial" name="nombre[oficial]" class="form-input <%= errores['nombre.oficial'] ? "nombre-clase" : "" %>" value="<%= pais ? pais.nombre.oficial : '' %>"/>
                 <% if (errores['nombre.oficial']) { %>
                     <span class="alert alert--error"><%= errores['nombre.oficial'] %></span>
                 <% } %>
@@ -38,7 +38,7 @@
               <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
                 <div class="custom-select-bandera">
                     <!-- Botón -->
-                    <button type="button" id="selectorBandera" class="form-select d-flex align-items-center gap-2 text-start">
+                    <button type="button" id="selectorBandera" class="form-select d-flex align-items-center gap-2 text-start <%= errores.bandera ? "nombre-clase" : "" %>">
                     <% if (pais && pais.bandera) { %>
                         <!-- Si es para editar, precarga en el botón la imágen de la bandera del país -->
                         <img src="<%= pais.bandera %>" width="32" height="20" style="object-fit: cover;">
@@ -70,7 +70,7 @@
         <label class="form-label" for="capital">Capital(es) <span class="required">*</span></label>
         <% // Al volver a renderizar el formulario despues de econtrar errores de validación %>
         <% // El campo pais.capital llega como un string %>
-        <input type="text" id="capital" name="capital" class="form-input"
+        <input type="text" id="capital" name="capital" class="form-input <%= errores.capital ? "nombre-clase" : "" %>"
             value="<%= pais && pais.capital ? (Array.isArray(pais.capital) ? pais.capital.join(', ') : pais.capital) : '' %>"
             placeholder="Buenos Aires, Córdoba (separadas por coma)" />
         <span class="form-hint">Si el país tiene mas de una capital, seperar por comas</span>
@@ -86,7 +86,7 @@
         <div class="form-group">
             <label class="form-label" for="subregion">Subregión <span class="required">*</span></label>
             <!-- Select para subregión -->
-            <select id="subregion" name="subregion" class="form-select">
+            <select id="subregion" name="subregion" class="form-select <%= errores.subregion ? "nombre-clase" : "" %>">
                 <option value="">Seleccioná una subregión</option>
                     <% subregiones.forEach((subregion) => { %>
                         <option value="<%= subregion %>" <%= pais && pais.subregion === subregion ? 'selected' : '' %>><%= subregion %></option>
@@ -99,7 +99,7 @@
         <!-- Área -->
         <div class="form-group">
             <label class="form-label" for="area">Área (km²) <span class="required">*</span></label>
-            <input type="number" id="area" name="area" class="form-input" step="any" value="<%= pais ? pais.area : '' %>"/>
+            <input type="number" id="area" name="area" class="form-input <%= errores.area ? "nombre-clase" : "" %>" step="any" value="<%= pais ? pais.area : '' %>"/>
             <% if (errores.area) { %>
                 <span class="alert alert--error"><%= errores.area %></span>
             <% } %>
@@ -107,7 +107,7 @@
         <!-- Poblacíon -->
         <div class="form-group">
             <label class="form-label" for="poblacion">Población <span class="required">*</span></label>
-            <input type="number" id="poblacion" name="poblacion" class="form-input" value="<%= pais ? pais.poblacion : '' %>" step="any"/>
+            <input type="number" id="poblacion" name="poblacion" class="form-input <%= errores.poblacion ? "nombre-clase" : "" %>" value="<%= pais ? pais.poblacion : '' %>" step="any"/>
             <% if (errores.poblacion) { %>
                 <span class="alert alert--error"><%= errores.poblacion %></span>
             <% } %>
@@ -119,8 +119,8 @@
 <section class="form-section">
   <div class="form-group">
       <label class="form-label" for="fronteras">Fronteras (códigos ISO 3)</label>
-      <input type="text" id="fronteras" name="fronteras" class="form-input"
-          value="<%= pais && pais.fronteras ? pais.fronteras.join(', ') : '' %>"
+      <input type="text" id="fronteras" name="fronteras" class="form-input comun <%= errores.fronteras ? "nombre-clase" : "" %>"
+          value="<%= pais && pais.fronteras ? (Array.isArray(pais.fronteras) ? pais.fronteras.join(', ') : pais.fronteras) : '' %>"
           placeholder="ARG, BRA, CHL (separados por coma, 3 letras c/u)" />
       <% if (errores.fronteras) { %>
           <span class="alert alert--error"><%= errores.fronteras %></span>
@@ -138,7 +138,7 @@
     <!-- Renderizar inputs de tipo checkobx, para cada zona horaria -->
     <div class="checkbox-group">
         <% zonasHorarias.forEach(zona => { %>
-            <label class="checkbox-label">
+            <label class="checkbox-label <%= errores.zonasHorarias ? "nombre-clase" : "" %>">
                 <!-- Si es para editar le agrega el atributo 'check' a las zonas horarias que concidan con el del país -->
                 <input type="checkbox" name="zonasHorarias" value="<%= zona %>" <%=pais && pais.zonasHorarias &&
                     pais.zonasHorarias.includes(zona) ? 'checked' : '' %> />
@@ -155,7 +155,7 @@
         <!-- Simbolo moneda -->
         <div class="form-group">
             <label class="form-label" for="moneda_simbolo">Símbolo <span class="required">*</span></label>
-            <input type="text" id="moneda_simbolo" name="moneda[simbolo]" class="form-input"
+            <input type="text" id="moneda_simbolo" name="moneda[simbolo]" class="form-input <%= errores['moneda.simbolo'] ? "nombre-clase" : "" %>"
                 value="<%= pais ? pais.moneda.simbolo : '' %>"  placeholder="$" />
             <% if (errores['moneda.simbolo']) { %>
                 <span class="alert alert--error"><%= errores['moneda.simbolo'] %></span>
@@ -164,7 +164,7 @@
         <!-- Nombre moneda -->
         <div class="form-group">
             <label class="form-label" for="moneda_nombre">Nombre de la Moneda <span class="required">*</span></label>
-            <input type="text" id="moneda_nombre" name="moneda[nombre]" class="form-input"
+            <input type="text" id="moneda_nombre" name="moneda[nombre]" class="form-input <%= errores['moneda.nombre'] ? "nombre-clase" : "" %>"
                 value="<%= pais ? pais.moneda.nombre : '' %>"
                 placeholder="Peso argentino" />
                 <% if (errores['moneda.nombre']) { %>
@@ -179,9 +179,9 @@
     <h2 class="section-title">Índice de Gini <span class="form-optional">(opcional)</span></h2>
     <div class="form-grid form-grid--2">
       <!-- Valor de gini -->
-      <div class="form-group">
+      <div class="form-group <%= errores.indiceGini ? "nombre-clase" : "" %>">
         <label class="form-label" for="gini_valor">Valor (0 – 100)</label>
-        <input type="number" id="gini_valor" name="indiceGini[valor]" class="form-input"
+        <input type="number" id="gini_valor" name="indiceGini[valor]" class="form-input <%= errores['indiceGini.valor'] ? "nombre-clase" : "" %>"
             value="<%= pais && pais.indiceGini ? pais.indiceGini.valor : '' %>" step="any" />
         <% if (errores['indiceGini.valor']) { %>
               <span class="alert alert--error"><%= errores['indiceGini.valor'] %></span>
@@ -190,7 +190,7 @@
       <!-- Año de medición -->
       <div class="form-group">
           <label class="form-label" for="gini_anio">Año</label>
-          <input type="number" id="gini_anio" name="indiceGini[anio]" class="form-input"
+          <input type="number" id="gini_anio" name="indiceGini[anio]" class="form-input <%= errores['indiceGini.anio'] ? "nombre-clase" : "" %>"
               value="<%= pais && pais.indiceGini ? pais.indiceGini.anio : '' %>"
               max="<%= new Date().getFullYear() %>" step="any" placeholder="2022" />
           <% if (errores['indiceGini.anio']) { %>

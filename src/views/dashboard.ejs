@@ -125,7 +125,7 @@
               <span class="text-muted">—</span>
             <% } %>
           </td>
-
+          </td>
           <!-- Botónes con para editar/eliminar país -->
           <td class="cell-actions">
             <!-- Botón para hecer la patición GET para renderizar el formulario de edición, obteniendo y mandando su ID cómo parametro de ruta -->
@@ -141,7 +141,20 @@
           </td>
         </tr>
         <% }) %>
+
       </tbody>
+      <tfoot>
+        <!-- Totales para poblacion, area y promedio de gini -->
+          <td>
+            <% if (totalArea) { %>
+                  <span>Área de América: <%= totalArea.toLocaleString()%></span>
+            <% } %>
+          </td>
+          <td>
+            <% if (totalPoblacion) { %>
+                  <span>Población total de América: <%= totalPoblacion.toLocaleString() %></span>
+            <% } %>
+      </tfoot>
     </table>
   </div>
 
