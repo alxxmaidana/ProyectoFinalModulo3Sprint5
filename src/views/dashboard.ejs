@@ -11,7 +11,7 @@
 </div>
 
 <!-- Mensajes de confirmación si se agregó, editó o eliminó correctamente un país -->
-  <% if (mensaje) { %>
+<% if (mensaje) { %>
   <div class="alert alert--<%= tipoMensaje %>">
     <span class="alert-icon"><%= tipoMensaje === "exito" ? '✓' : 'ℹ' %></span>
     <%= mensaje %>

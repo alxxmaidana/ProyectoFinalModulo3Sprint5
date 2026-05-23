@@ -7,33 +7,41 @@ const validacionesPaises = [
         // Eliminar los espacios el blanco al inicio y final
         .trim()
         // Validar que campo no esté vació
-        .notEmpty().withMessage("El nombre común del país es obligatorio")
+        .notEmpty().withMessage("Ingrese el nombre común del país")
         // bail() -> Detiene la ejecución de la cadena de validaciones si la validación falló
-        .bail()
-        .isString().withMessage("El nombre común debe ser un texto")
         .bail() 
         // Que tenga un mínimo de 3 caractéres
-        .isLength({ min: 3 }).withMessage("El nombre común debe tener un mínimo de 3 caractéres")
+        .isLength({ min: 3 }).withMessage("El nombre común debe tener almenos de 3 caractéres")
         .bail()
         // Que tenga un máximo de 90 caractéres
-        .isLength({ max: 90 }).withMessage("El nombre común no puede superar los 60 caractéres"),
+        .isLength({ max: 90 }).withMessage("El nombre común no puede superar los 90 caractéres")
+        .custom((nombreComun) => {
+            const regex = /^[a-zA-ZÀ-ÿ\s,']+$/;
+            if (!regex.test(nombreComun)) {
+                throw new Error("El nombre común del país no puede contener números ni carácteres especiales")
+            }
+            return true;
+        }),
     // Nombre oficial
     body("nombre.oficial")
         .trim()
-        .notEmpty().withMessage("El nombre oficial es obligatorio")
+        .notEmpty().withMessage("Ingrese el nombre oficial del país")
         .bail()
-        .isString().withMessage("El nombre oficial debe ser un texto")
+        .isLength({ min: 3 }).withMessage("El nombre oficial debe tener almenos de 3 caractéres")
         .bail()
-        .isLength({ min: 3 }).withMessage("El nombre oficial debe tener un mínimo de 3 caractéres")
+        .isLength({ max: 90 }).withMessage("El nombre oficial no puede superar los 90 caractéres")
         .bail()
-        .isLength({ max: 90 }).withMessage("El nombre oficial no puede superar los 90 caractéres"),
-
+        .custom((nombreOficial) => {
+            const regex = /^[a-zA-ZÀ-ÿ\s,']+$/;
+            if (!regex.test(nombreOficial)) {
+                throw new Error("El nombre oficial del país no puede contener números ni caractéres especiales")
+            }
+            return true;
+        }),
     // Validar URL de la bandera
     body("bandera")
-        .optional({ values: "falsy" })  // ← ignora "", null, undefined, 0
         .trim()
-        // Que tenga formato de URL
-        .isURL().withMessage("El campo bandera debe ser una URL válida"),
+        .notEmpty().withMessage("Elija la bandera del país"),
 
     ////////////
     // Capital 
@@ -42,75 +50,59 @@ const validacionesPaises = [
         .trim(),
     body("capital")
         // Que el array capital no esté vacío
-        .isArray({ min: 1 }).withMessage("La capital es obligatória")
+        .isArray({ min: 1 }).withMessage("Ingrese la capital del país")
         .bail()
-        // Cáda capital sea un texto  
-        .custom((capitales) => {
-            // Sin almenos uno no cumple con la validación muestra el mensaje de corrección una sola vez
-            if (capitales.some((capital) => typeof capital !== "string")) {
-                throw new Error("Cada capital debe ser un texto")
-            }
-            return true;
-        })
         // Cada capitlal tenga alménos 3 caracteres
         .custom((capitales) => {
+            // Validar que tenga almenos 3 caractéres 
             if (capitales.some((capital) => capital.length < 3)) {
                 throw new Error("Cada capital debe tener almenos 3 caractéres")
             }
-            return true;
-        })
-        .bail()
-        // No superen los 90 caracteres
-        .custom((capitales) => {
+            // Que tenga cómo máximo 90 caractéres
             if (capitales.some((capital) => capital.length > 90)) {
-                throw new Error("Cada capital no puede superara los 90 caractéres")
+                throw new Error("Cada capital no puede superar los 90 caractéres")
+            }
+            // No contenga números ni caractéres especiales
+            const regex =  /^[a-zA-ZÀ-ÿ\s,']+$/;
+            if (capitales.some((capital) => !regex.test(capital))) {
+                throw new Error("La capital no puede contener números ni caractéres especiales")
             }
             return true;
+            // Con some validamos que alménos un elemento del array no cumpla la condicion
         }),
-    // Validando de forma con some() evita enviar mensajes de corrección repetidos para cada elemento que no las cumpla
-
-
     /////////////////////
     // Subregión
     //////////////////
     body("subregion")
         .trim()
         // Subregión obligatória
-        .notEmpty().withMessage("La subregión es obligatoria"),
-
+        .notEmpty().withMessage("Elija la subregión del país"),
     ////////////////////////
     // Fronteras
     ////////////////////////
-    body("fronteras.*")
-    // Eliminar espacios en blanco de cada país de frontereas
+    body("frontereas.*") 
         .trim(),
     // Validar que todos los países sean solo letras
     body("fronteras")
-        .optional()
-        .custom(fronteras => {
-            if (fronteras.some(pais => !pais.match(/^[A-Za-z\s]+$/))) {
-                throw new Error("Cada país debe contener sólo letras");
+        // Si el campo está vacío no valida
+        .custom((fronteras) => {
+            if (fronteras.length > 0) {
+                // Que solo contenga letras
+                if (fronteras.some(pais => !pais.match(/^[A-Za-z\s]+$/))) {
+                    throw new Error("Cada país debe contener sólo letras");
+                }
+                // Que esté en mayùsculas
+                if (fronteras.some((frontera) => frontera !== frontera.toUpperCase())) {
+                    throw new Error("El código de cada frontera deber estar en mayúsculas");
+                }
+                // Que tenga exactamente 3 carácteres
+                if (fronteras.some(pais => pais.length !== 3)) {
+                    throw new Error("El código de cada país debe tener exactamente 3 caracteres");
+                }
             }
             return true;
         }),
-    // Validar longitud exácta de cada país (3 caracteres)
-    body("fronteras")
-        .optional()
-        .custom(fronteras => {
-            if (fronteras.some(pais => pais.length !== 3)) {
-                throw new Error("El código de cada país debe tener exactamente 3 caracteres");
-            }
-            return true;
-        }),
-    // Validar que esté en mayúsculas
-    body("fronteras")
-        .optional()
-        .custom(fronteras => {
-            if (fronteras.some(frontera => frontera !== frontera.toUpperCase())) {
-                throw new Error("El código de cada frontera deber ser estar en mayúsculas");
-            }
-            return true;
-        }),
+    
 
     //////////////////////
     // Área
@@ -124,8 +116,8 @@ const validacionesPaises = [
         .bail()
         //  Que no sea negativo
         .custom(value => {
-            if (Number(value) < 0) {
-                throw new Error("El área del país no puede ser negativo")
+            if (Number(value) <= 0) {
+                throw new Error("El area debe ser un número mayor 0 (cero)")
             }
             return true;
         }),
@@ -135,20 +127,10 @@ const validacionesPaises = [
     ////////////////////
     body("poblacion")
         .trim()
-        .notEmpty().withMessage("La cantidad de habitantes del país es obligatória")
+        .notEmpty().withMessage("Ingrese la cantidad de habitantes")
         .bail()
         .isNumeric().withMessage("La cantidad de habitantes debe ser un número entero")
-        .bail()
-        // Que población sea entero
-        .isInt().withMessage("La cantidad de habitantes debe ser un número entero")
-        .bail()
-        // Que no sea negativo
-        .custom(value => {
-            if (Number(value) < 0) {
-                throw new Error("La cantidad de habitantes del país no puede ser negativa")
-            }
-            return true;
-        }),
+        .isInt({ min: 1 }).withMessage("La cantidad de habitantes debe ser un número entero positivo (mayor a cero)"),
 
     ///////////////////////
     // Zonas horárias
@@ -157,8 +139,8 @@ const validacionesPaises = [
         .trim(),
     body("zonasHorarias")
         // Verificar que tenga almenos una zona horaria
-        .isArray({ min: 1 }).withMessage("Eliga almenos una zona horária"),
-    
+        .isArray({ min: 1 }).withMessage("Elija almenos una zona horária"),
+
     //////////////////////
     // Monedas
     //////////////////////
@@ -176,7 +158,13 @@ const validacionesPaises = [
         .notEmpty().withMessage("El nombre de la moneda es requerido")
         .bail()
         // Que se texto
-        .isString().withMessage("El nombre de la moneda deber ser un texto")
+        .custom((nombreMoneda) => {
+            const regex = /^[a-zA-ZÀ-ÿ\s,']+$/;
+            if (!regex.test(nombreMoneda)) {
+                throw new Error("El nombre de la moneda no puede contener número y caractéres especiales");
+            }
+            return true;
+        })
         .bail()
         // Que tenga cómo minimo 3 caracteres y máximo 40
         .isLength({ min: 3, max: 40 }).withMessage("El nombre debe tener entre 3 y 40 caracteres"),

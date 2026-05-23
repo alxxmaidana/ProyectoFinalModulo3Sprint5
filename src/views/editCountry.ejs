@@ -2,8 +2,8 @@
 <div class="page-header">
     <div class="page-header-inner">
         <div>
-            <h1 class="page-title">
-                <%= 'Editar '+ pais.nombre.comun  %>
+            <h1 class="page-title"">
+                <%= 'Editar '+ pais.nombre.comun%>
                 <% if (pais) { %>
                     <img src="<%= pais.bandera %>" alt="Bandera de <%= pais.nombre.comun %>" class="flag-img" />
                 <% } %>
@@ -12,14 +12,13 @@
                 Completa los campos del País. Los campos con <span class="required">*</span> son obligatórios.
             </p>
         </div>
-        <!-- Botón para voler al Dashboard -->
-        <a href="/paises" class="btn btn--ghost">← Volver</a>
+    <!-- Botón para voler al Dashboard -->
+    <a href="/paises" class="btn btn--ghost">← Volver</a>
 </div>
 
 <!-- Formulario -->
 <div class="form-card">
     <form action="/paises/<%= pais._id %>/editar?_method=PUT" method="POST">
-
         <!-- Incluir el formulario, pasandolo los campos necesarios -->
         <%- include("partials/form", {
             title: "Agregar País",

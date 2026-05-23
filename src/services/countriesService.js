@@ -2,6 +2,7 @@ import CountriesRepository from "../repositories/CountriesRepository.js";
 import dotenv from "dotenv";
 import Paises from "../models/country.js";
 import DatosFormulario from "../models/formsData.js";
+import { validationResult } from "express-validator";
 dotenv.config();
 
 //////////////////////////////////////////////
@@ -19,8 +20,8 @@ function filtrarYFormatearCamposPaisesHispanos(paisesHispanos) {
         // El indice de Gini viene cómo un objeto con el año como clave y el valor como valor -> gini: { "2019": 43.5 }
         // Con el método entries(object) obtenemos del objeto los pares clave/valor (en este caso el año y el valor del índice) y los guarda en una matriz -> [ [clave, valor] ]
         // Obtenemos -> [ ["2019", 43.5] ], y accedemos al primer y único elemento del array
-        const valoresGini = pais.gini ? Object.entries(pais.gini)[0]: null; 
-        
+        const valoresGini = pais.gini ? Object.entries(pais.gini)[0] : null;
+
         // El operador ?? (coalesencia nula) devuelve el operando del lado derecho cuando el valor del izquierdo es "null" o "undefined"
         return {
             nombre: {
@@ -60,10 +61,10 @@ function recopilarDatosParaFormulario(paises) {
         const zonasHorariasPais = pais.timezones;
         for (let i = 0; i < zonasHorariasPais.length; i++) {
             // Si la zona horaria no está en el array, la agrega
-            if (!zonasHorarias.includes(zonasHorariasPais[i])){ 
+            if (!zonasHorarias.includes(zonasHorariasPais[i])) {
                 zonasHorarias.push(zonasHorariasPais[i])
             }
-        } 
+        }
         // Obtenemos la subregión del país y la agregamos al array de subregiones, asegurando que no se repitan
         const subregionPais = pais.subregion;
         if (!subregiones.includes(subregionPais)) {
@@ -127,4 +128,18 @@ export async function obtenerDatosParaFormulario() {
 // Servicio para verficiar si ya existe el país con el filtro definido
 export async function verificarSiYaExisteElPais(nombreOficial) {
     return await CountriesRepository.verificarSiYaExiste();
+}
+
+// Verificar si hubo errores de validación, crear el objeto de errores
+export function formatearErrores(resultado) {
+    const errores = {};
+    resultado.array().forEach((error) => {
+        // Crear pares claves valor con los campos path (nombre del campo que falló) y msg (el mensaje de error), agregarlas al objeto errores, 
+        // en cada iteración obtengo { path: msg } -> ej: { area: "En área no puede ser negativa" };
+        errores[error.path] = error.msg;
+    });
+    // Despues de iterar todo el array resultado obtengo: 
+    // errores = { { area: "El area no puede ser negativa" }, { 'nombre.oficial': "El nombre oficial debe tener alménos 3 caracteres" } }
+    console.log("Errores formateados: ", errores)
+    return errores;
 }
